@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<!-- Kunci Viewport Anti-Zoom -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<!-- Meta Tag Fullscreen untuk iOS Safari (Add to Homescreen) -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="iCloud Dashboard">
+
+<title>My iCloud Style Dashboard Grid</title>
+
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+    /* Variabel Warna Dasar & Mode Terang */
+    :root {
+        --bg-gradient: linear-gradient(135deg, #3b82f6, #60a5fa, #93c5fd);
+        --card-bg: rgba(255, 255, 255, 0.85);
+        --card-body-bg: #ffffff;
+        --text-primary: #1e293b;
+        --text-secondary: #64748b;
+        --text-meta: #94a3b8;
+        --border-color: #f1f5f9;
+        --input-bg: #f8fafc;
+        --input-border: #cbd5e1;
+        --header-bg: rgba(255, 255, 255, 0.4);
+        --box-bg: #f1f5f9;
+        --box-text: #334155;
+        --title-color: #ffffff;
+    }
+
+    /* Mode Malam (Dark Mode) */
+    [data-theme="dark"] {
+        --bg-gradient: linear-gradient(135deg, #0f172a, #1e293b, #334155);
+        --card-bg: rgba(30, 41, 59, 0.85);
+        --card-body-bg: #1e293b;
+        --text-primary: #f8fafc;
+        --text-secondary: #cbd5e1;
+        --text-meta: #64748b;
+        --border-color: #334155;
+        --input-bg: #0f172a;
+        --input-border: #475569;
+        --header-bg: rgba(15, 23, 42, 0.4);
+        --box-bg: #0f172a;
+        --box-text: #cbd5e1;
+        --title-color: #f8fafc;
+    }
+
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        transition: background 0.3s, color 0.3s, border-color 0.3s;
+    }
+
+    body {
+        background: var(--bg-gradient);
+        min-height: 100vh;
+        padding: calc(24px + env(safe-area-inset-top)) 24px 80px 24px;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: center;
+    }
+
+    /* Gaya Desain Judul Utama */
+    .main-welcome-title {
+        font-size: 32px;
+        font-weight: 700;
+        color: var(--title-color);
+        margin-bottom: 32px;
+        text-align: center;
+        letter-spacing: -0.5px;
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .dashboard-grid {
+        width: 100%;
+        max-width: 960px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+    }
+
+    @media (max-width: 768px) {
+        .dashboard-grid {
+            grid-template-columns: 1fr;
+            padding: 0;
+        }
+        body {
+            padding: calc(24px + env(safe-area-inset-top)) 12px 100px 12px;
+        }
+        .main-welcome-title {
+            font-size: 28px;
+            margin-bottom: 24px;
+        }
+    }
+
+    .icloud-card {
+        background: var(--card-bg);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border-radius: 24px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        height: 320px;
+    }
+
+    .icloud-card.ota-card-layout {
+        height: auto;
+        min-height: 320px;
+        grid-column: span 1;
+    }
+    
+    .ota-history-panel {
+        margin-top: 16px;
+        padding-top: 16px;
+        border-top: 2px solid var(--border-color);
+    }
+
+    .card-header {
+        padding: 16px 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: var(--header-bg);
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .header-left {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .app-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    }
+
+    .notes-icon { background: #fef9c3; color: #ca8a04; }
+    .drive-icon { background: #e0f2fe; color: #0284c7; }
+    .bookmark-icon { background: #dcfce7; color: #16a34a; }
+    .calc-icon { background: #fee2e2; color: #dc2626; }
+    .text-icon { background: #f3e8ff; color: #9333ea; }
+
+    .app-info h2 {
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--text-primary);
+    }
+
+    .app-info span {
+        font-size: 12px;
+        color: var(--text-secondary);
+    }
+
+    .header-right {
+        font-size: 16px;
+        cursor: pointer;
+        transition: opacity 0.2s;
+    }
+    .header-right:hover { opacity: 0.7; }
+    .notes-color { color: #ca8a04; }
+    .drive-color { color: #0284c7; }
+    .bookmark-color { color: #16a34a; }
+
+    .card-body {
+        background: var(--card-body-bg);
+        padding: 20px;
+        flex: 1;
+        overflow-y: auto;
+    }
+
+    .list-container {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .item-row {
+        padding: 10px 0;
+        border-bottom: 1px solid var(--border-color);
+        cursor: pointer;
+        transition: background 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        min-width: 0;
+        gap: 12px;
+    }
+    .item-row:hover {
+        background: rgba(0, 0, 0, 0.02);
+    }
+    .item-row:last-child { border-bottom: none; }
+
+    .item-text-wrapper {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .item-title {
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--text-primary);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        width: 100%;
+    }
+    
+    .item-meta {
+        font-size: 12px;
+        color: var(--text-meta);
+        margin-top: 2px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        width: 100%;
+    }
+    .item-link {
+        color: #3b82f6;
+        text-decoration: none;
+    }
+
+    /* Tombol Salin Cepat di List Catatan */
+    .quick-copy-btn {
+        background: transparent;
+        border: none;
+        color: #ca8a04;
+        cursor: pointer;
+        padding: 8px;
+        font-size: 15px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .quick-copy-btn:active {
+        background: rgba(202, 138, 4, 0.15);
+    }
+
+    .drive-upload-zone {
+        background: var(--input-bg);
+        border: 2px dashed var(--input-border);
+        border-radius: 16px;
+        padding: 12px;
+        text-align: center;
+        color: var(--text-secondary);
+        cursor: pointer;
+        margin-bottom: 12px;
+        font-size: 13px;
+    }
+    .drive-upload-zone i { font-size: 24px; color: #3b82f6; margin-bottom: 4px; display: block;}
+
+    .ota-select, .ota-input {
+        width: 100%;
+        padding: 10px 12px;
+        font-size: 16px;
+        border: 1px solid var(--input-border);
+        border-radius: 10px;
+        background: var(--input-bg);
+        color: var(--text-primary);
+        outline: none;
+        margin-top: 6px;
+        margin-bottom: 12px;
+        -webkit-appearance: none;
+    }
+    .ota-input-row { display: flex; gap: 8px; align-items: center; margin-top: 6px; margin-bottom: 12px; }
+    .ota-input-row input { flex: 1; margin: 0; }
+    .ota-btn { padding: 10px 16px; border: none; border-radius: 10px; color: white; font-weight: 600; font-size: 16px; cursor: pointer; background: #16a34a; white-space: nowrap; }
+    .ota-btn:active { background: #15803d; }
+    
+    .ota-label { font-size: 13px; font-weight: 600; color: var(--text-secondary); display: block; }
+    .ota-status { font-size: 12px; padding: 4px 10px; border-radius: 8px; display: inline-block; font-weight: 500; margin-bottom: 14px; }
+    .ota-yellow { background: #fef3c7; color: #d97706; }
+    .ota-green { background: #dcfce7; color: #16a34a; }
+
+    .ota-result { background: #16a34a; padding: 16px; border-radius: 14px; text-align: center; color: white; margin-bottom: 14px; }
+    .ota-resultTitle { font-size: 14px; opacity: 0.9; margin-bottom: 4px; }
+    .ota-big { font-size: 28px; font-weight: bold; margin-bottom: 6px; }
+    .ota-subinfo { font-size: 13px; opacity: 0.9; line-height: 1.4; }
+
+    .ota-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+    .ota-box { background: var(--box-bg); color: var(--box-text); padding: 8px 4px; border-radius: 8px; text-align: center; font-size: 12px; line-height: 1.3; }
+    .ota-box b { font-size: 13px; color: var(--text-primary); display: block; margin-top: 2px; }
+
+    .ota-history-title { font-size: 15px; font-weight: 700; color: var(--text-primary); margin-bottom: 10px; }
+    .ota-hist-item { margin-bottom: 8px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; font-size: 13px; }
+    .ota-hist-main { font-family: monospace; font-weight: bold; color: var(--text-primary); }
+    .ota-hist-split { font-size: 11px; color: var(--text-secondary); margin-top: 4px; font-family: monospace; display: flex; flex-wrap: wrap; gap: 6px; }
+
+    .card-footer { padding: 6px 20px 10px 20px; background: var(--card-body-bg); font-size: 13px; color: var(--text-meta); border-top: 1px solid var(--border-color); }
+
+    #textConverterInput {
+        width: 100%; 
+        flex: 1; 
+        border: 1px solid var(--input-border); 
+        border-radius: 12px; 
+        padding: 12px; 
+        resize: none; 
+        font-size: 16px; 
+        outline: none; 
+        background: var(--input-bg);
+        color: var(--text-primary); 
+        font-family: inherit;
+    }
+
+    .modal-overlay {
+        position: fixed;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: rgba(0, 0, 0, 0.4);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+        padding: 20px;
+    }
+    .modal-box {
+        background: var(--card-body-bg);
+        width: 100%;
+        max-width: 520px;
+        border-radius: 20px;
+        padding: 24px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        display: flex;
+        flex-direction: column;
+        max-height: 85vh;
+    }
+    .modal-title { font-size: 20px; font-weight: 700; color: var(--text-primary); margin-bottom: 12px; }
+    .modal-body { font-size: 15px; color: var(--text-secondary); line-height: 1.6; overflow-y: auto; flex: 1; white-space: pre-wrap; }
+    
+    .email-form-group {
+        margin-bottom: 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+    .email-label {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text-secondary);
+    }
+    .email-input-subject, .email-textarea-body {
+        width: 100%;
+        padding: 10px 14px;
+        font-size: 16px;
+        border: 1px solid var(--input-border);
+        border-radius: 10px;
+        background: var(--input-bg);
+        color: var(--text-primary);
+        outline: none;
+    }
+    .email-textarea-body {
+        height: 180px;
+        border-radius: 12px;
+        resize: none;
+    }
+    
+    .modal-action-buttons {
+        display: flex;
+        gap: 12px;
+        margin-top: 16px;
+    }
+    .btn-action {
+        flex: 1;
+        padding: 12px;
+        font-weight: 600;
+        font-size: 16px;
+        border-radius: 12px;
+        cursor: pointer;
+        border: none;
+        text-align: center;
+    }
+    .btn-cancel { background: #f1f5f9; color: #475569; }
+    .btn-submit { background: #3b82f6; color: white; }
+    .btn-close-only { background: #3b82f6; color: white; width: 100%; margin-top: 16px; }
+
+    /* PANEL DI BAGIAN PALING BAWAH (THEME TOGGLER) */
+    .theme-controller {
+        margin-top: 40px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        background: rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        padding: 10px 20px;
+        border-radius: 30px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        color: white;
+        font-size: 14px;
+        font-weight: 500;
+    }
+    [data-theme="dark"] .theme-controller {
+        background: rgba(15, 23, 42, 0.6);
+        color: #cbd5e1;
+    }
+    .toggle-switch {
+        position: relative;
+        display: inline-block;
+        width: 50px;
+        height: 26px;
+    }
+    .toggle-switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background-color: #cbd5e1;
+        transition: .4s;
+        border-radius: 34px;
+    }
+    .slider:before {
+        position: absolute;
+        content: "";
+        height: 18px;
+        width: 18px;
+        left: 4px;
+        bottom: 4px;
+        background-color: white;
+        transition: .4s;
+        border-radius: 50%;
+    }
+    input:checked + .slider {
+        background-color: #3b82f6;
+    }
+    input:checked + .slider:before {
+        transform: translateX(24px);
+    }
+</style>
+</head>
+<body>
+
+<!-- JUDUL PALING ATAS TENGAH -->
+<h1 class="main-welcome-title">Welcome, Wildan!</h1>
+
+<div class="dashboard-grid">
+
+    <!-- KARTU: CATATAN -->
+    <div class="icloud-card">
+        <div class="card-header">
+            <div class="header-left">
+                <div class="app-icon notes-icon"><i class="fa-solid fa-note-sticky"></i></div>
+                <div class="app-info">
+                    <h2>Catatan</h2>
+                    <span>Semua iCloud</span>
+                </div>
+            </div>
+            <div class="header-right notes-color" onclick="openCreateNoteModal()">
+                <i class="fa-regular fa-pen-to-square"></i>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="list-container" id="notesContainer">
+                <div class="item-meta">Memuat catatan...</div>
+            </div>
+        </div>
+        <div class="card-footer" id="notesFooter">0 Catatan</div>
+    </div>
+
+    <!-- KARTU: DRIVE -->
+    <div class="icloud-card">
+        <div class="card-header">
+            <div class="header-left">
+                <div class="app-icon drive-icon"><i class="fa-solid fa-folder-open"></i></div>
+                <div class="app-info">
+                    <h2>Drive</h2>
+                    <span>File Saya</span>
+                </div>
+            </div>
+            <div class="header-right drive-color" onclick="loadDriveFiles()">
+                <i class="fa-solid fa-rotate-right"></i>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="drive-upload-zone" onclick="document.getElementById('fileInput').click()">
+                <i class="fa-solid fa-cloud-arrow-up"></i>
+                <span id="uploadStatus">Ketuk untuk unggah file baru</span>
+                <input type="file" id="fileInput" style="display: none;" onchange="handleFileUpload(event)">
+            </div>
+            <div class="list-container" id="driveContainer">
+                <div class="item-meta">Memuat berkas...</div>
+            </div>
+        </div>
+        <div class="card-footer" id="driveFooter">0 Berkas</div>
+    </div>
+
+    <!-- KARTU: BOOKMARK -->
+    <div class="icloud-card">
+        <div class="card-header">
+            <div class="header-left">
+                <div class="app-icon bookmark-icon"><i class="fa-solid fa-bookmark"></i></div>
+                <div class="app-info">
+                    <h2>Bookmark</h2>
+                    <span>Tautan Tersimpan</span>
+                </div>
+            </div>
+            <div class="header-right bookmark-color" onclick="openBookmarkModal()">
+                <i class="fa-solid fa-plus"></i>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="list-container" id="bookmarkContainer">
+                <div class="item-meta">Memuat bookmark...</div>
+            </div>
+        </div>
+        <div class="card-footer" id="bookmarkFooter">0 Tautan</div>
+    </div>
+
+    <!-- KARTU: UBAH HURUF -->
+    <div class="icloud-card">
+        <div class="card-header">
+            <div class="header-left">
+                <div class="app-icon text-icon"><i class="fa-solid fa-font"></i></div>
+                <div class="app-info">
+                    <h2>Ubah Huruf</h2>
+                    <span>Konverter Kapital</span>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div style="display: flex; flex-direction: column; gap: 10px; height: 100%;">
+                <textarea id="textConverterInput" placeholder="Ketik, tempel, atau gunakan tombol Paste..." oninput="updateCharCount()"></textarea>
+                <div style="display: flex; gap: 8px;">
+                    <button class="ota-btn" style="flex: 1; background: #9333ea; color: white; border: none; height: 44px; border-radius: 10px; font-weight:600; cursor:pointer;" onclick="convertToUppercaseAndCopy()"><i class="fa-regular fa-copy" style="margin-right: 6px;"></i>KAPITAL & SALIN</button>
+                    <button class="ota-btn" style="width: 44px; height: 44px; background: #f1f5f9; color: #475569; border:1px solid #cbd5e1; border-radius:10px; cursor:pointer; display:flex; align-items:center; justify-content:center;" title="Tempel dari Clipboard" onclick="pasteFromClipboard()"><i class="fa-solid fa-clipboard"></i></button>
+                    <button class="ota-btn" style="width: 44px; height: 44px; background: #ffedd5; color: #ea580c; border:1px solid #cbd5e1; border-radius:10px; font-weight:600; cursor:pointer; display:flex; align-items:center; justify-content:center;" onclick="clearTextConverter()">C</button>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer" id="textConverterFooter">0 Karakter</div>
+    </div>
+
+    <!-- KARTU: OTA CALCULATOR -->
+    <div class="icloud-card ota-card-layout">
+        <div class="card-header">
+            <div class="header-left">
+                <div class="app-icon calc-icon"><i class="fa-solid fa-calculator"></i></div>
+                <div class="app-info">
+                    <h2>OTA Calculator</h2>
+                    <span>Traveloka / My Horison</span>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <span class="ota-label">OTA</span>
+            <select id="ota" class="ota-select">
+                <option value="traveloka">Traveloka</option>
+                <option value="my">My Horison</option>
+            </select>
+            
+            <span class="ota-label">Voucher</span>
+            <div class="ota-input-row">
+                <input id="input" class="ota-input" type="tel" inputmode="numeric" placeholder="Masukkan harga...">
+                <button class="ota-btn" onclick="submitOTA()">Submit</button>
+            </div>
+            <div id="status" class="ota-status ota-yellow">🟡 Belum disimpan</div>
+            
+            <div class="ota-result">
+                <div class="ota-resultTitle">Room Revenue (Net)</div>
+                <div id="net" class="ota-big">Rp 0</div>
+                <div class="ota-subinfo">
+                    Harga Tamu (Gross): <span id="gross">Rp 0</span><br>
+                    Potongan OTA: <span id="cut">Rp 0</span>
+                </div>
+            </div>
+
+            <div class="ota-grid" id="gridBox"></div>
+
+            <div class="ota-history-panel">
+                <div class="ota-history-title">History</div>
+                <div class="list-container" id="historyBox" style="font-size: 13px; color: #475569;">Belum ada history</div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- SAKELAR MODE SIANG / MALAM DI PALING BAWAH -->
+<div class="theme-controller">
+    <span>Mode Siang</span>
+    <label class="toggle-switch">
+        <input type="checkbox" id="themeToggle" onchange="toggleTheme(this)">
+        <span class="slider"></span>
+    </label>
+    <span>Mode Malam</span>
+</div>
+
+<!-- AREA MODAL -->
+<div class="modal-overlay" id="noteViewModal" onclick="closeNoteViewModal()">
+    <div class="modal-box" onclick="event.stopPropagation()">
+        <div class="modal-title" id="modalViewTitle">Judul Catatan</div>
+        <div class="modal-body" id="modalViewBody">Isi lengkap catatan Anda...</div>
+        <button class="btn-action btn-close-only" onclick="closeNoteViewModal()">Tutup</button>
+    </div>
+</div>
+
+<div class="modal-overlay" id="noteCreateModal" onclick="closeCreateNoteModal()">
+    <div class="modal-box" onclick="event.stopPropagation()">
+        <div class="modal-title" id="modalTitle"><i class="fa-regular fa-envelope" style="color:#3b82f6; margin-right:8px;"></i>Catatan Baru</div>
+        
+        <div class="card-body" style="padding:0; overflow:visible;">
+            <div class="email-form-group">
+                <label class="email-label" id="labelSubject">Judul / Subjek:</label>
+                <input type="text" id="noteSubjectInput" class="email-input-subject" placeholder="Ketik subjek catatan Anda...">
+            </div>
+            
+            <div class="email-form-group">
+                <label class="email-label" id="labelBody">Isi Catatan:</label>
+                <textarea id="noteBodyInput" class="email-textarea-body" placeholder="Tulis teks isi catatan Anda di sini secara leluasa..."></textarea>
+            </div>
+        </div>
+
+        <div class="modal-action-buttons">
+            <button class="btn-action btn-cancel" onclick="closeCreateNoteModal()">Batal</button>
+            <button class="btn-action btn-submit" id="submitBtn" onclick="submitNewNote()">Kirim & Simpan</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const SUPABASE_URL = "https://awlxjzfadktcthbumxle.supabase.co"; 
+    const SUPABASE_ANON_KEY = "sb_publishable_LnE9IH5KKDzdV-gj9tIb6w_uOGVZi4o";
+
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+        auth: { persistSession: false, autoRefreshToken: false }
+    });
+
+    let currentNotesList = [];
+    let isBookmarkMode = false;
+
+    window.onload = function() {
+        loadNotes();
+        loadDriveFiles();
+        loadBookmarks();
+        initOTAGrid();
+        initTheme(); // Memuat preferensi tema malam/siang
+        
+        if (("standalone" in window.navigator) && window.navigator.standalone) {
+            var noddy, remotes = false;
+            document.addEventListener('click', function(event) {
+                noddy = event.target;
+                while (noddy.nodeName !== "A" && noddy.nodeName !== "HTML") {
+                    noddy = noddy.parentNode;
+                }
+                if ('href' in noddy && noddy.href.indexOf('http') !== -1 && (noddy.href.indexOf(document.location.host) !== -1 || remotes)) {
+                    event.preventDefault();
+                    document.location.href = noddy.href;
+                }
+            }, false);
+        }
+    };
+
+    // ====== MANAGEMENT TEMA (SIANG/MALAM) ======
+    function initTheme() {
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        if (savedTheme === 'dark') {
+            document.getElementById('themeToggle').checked = true;
+        }
+    }
+
+    function toggleTheme(checkbox) {
+        if (checkbox.checked) {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            localStorage.setItem('theme', 'dark');
+        } else {
+            document.documentElement.setAttribute('data-theme', 'light');
+            localStorage.setItem('theme', 'light');
+        }
+    }
+
+    function escapeHTML(str) {
+        if (!str) return '';
+        return str.replace(/[&<>'"]/g, 
+            tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
+        );
+    }
+
+    // ====== FUNGSI MODAL ======
+    function openBookmarkModal() {
+        isBookmarkMode = true;
+        document.getElementById('modalTitle').innerHTML = '<i class="fa-solid fa-bookmark" style="color:#16a34a; margin-right:8px;"></i>Bookmark Baru';
+        document.getElementById('labelSubject').innerText = "Nama Website:";
+        document.getElementById('noteSubjectInput').placeholder = "Contoh: Google";
+        document.getElementById('labelBody').innerText = "URL:";
+        document.getElementById('noteBodyInput').placeholder = "https://...";
+        document.getElementById('submitBtn').innerText = "Simpan Bookmark";
+        document.getElementById('noteCreateModal').style.display = 'flex';
+    }
+
+    function openCreateNoteModal() {
+        isBookmarkMode = false;
+        document.getElementById('modalTitle').innerHTML = '<i class="fa-regular fa-envelope" style="color:#3b82f6; margin-right:8px;"></i>Catatan Baru';
+        document.getElementById('labelSubject').innerText = "Judul / Subjek:";
+        document.getElementById('noteSubjectInput').placeholder = "Ketik subjek catatan Anda...";
+        document.getElementById('labelBody').innerText = "Isi Catatan:";
+        document.getElementById('noteBodyInput').placeholder = "Tulis teks isi catatan Anda di sini secara leluasa...";
+        document.getElementById('submitBtn').innerText = "Kirim & Simpan";
+        document.getElementById('noteCreateModal').style.display = 'flex';
+    }
+
+    function closeCreateNoteModal() {
+        document.getElementById('noteCreateModal').style.display = 'none';
+        document.getElementById('noteSubjectInput').value = "";
+        document.getElementById('noteBodyInput').value = "";
+    }
+
+    async function submitNewNote() {
+        if (isBookmarkMode) {
+            const nama = document.getElementById('noteSubjectInput').value.trim();
+            let url = document.getElementById('noteBodyInput').value.trim();
+            if (!nama || !url) return alert("Data tidak boleh kosong!");
+            if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
+            try {
+                await supabaseClient.from('bookmark').insert([{ nama: nama, url: url }]);
+                closeCreateNoteModal();
+                loadBookmarks();
+            } catch (e) { alert(e.message); }
+        } else {
+            const judul = document.getElementById('noteSubjectInput').value.trim();
+            const isi = document.getElementById('noteBodyInput').value.trim();
+            if (!judul) return alert("Judul wajib diisi!");
+            try {
+                await supabaseClient.from('catatan').insert([{ tittle: judul, description: isi }]);
+                closeCreateNoteModal();
+                loadNotes();
+            } catch (e) { alert(e.message); }
+        }
+    }
+
+    // ====== FUNGSI CATATAN ======
+    async function loadNotes() {
+        const container = document.getElementById('notesContainer');
+        const footer = document.getElementById('notesFooter');
+        let { data: catatan } = await supabaseClient.from('catatan').select('*').order('id', { ascending: false });
+        currentNotesList = catatan || [];
+        if (catatan && catatan.length > 0) {
+            footer.innerText = `${catatan.length} Catatan`;
+            container.innerHTML = catatan.map((note, index) => `
+                <div class="item-row" onclick="viewFullNote(${index})">
+                    <div class="item-text-wrapper">
+                        <div class="item-title">${escapeHTML(note.tittle)}</div>
+                        <div class="item-meta"><span>${escapeHTML(note.description)}</span></div>
+                    </div>
+                    <button class="quick-copy-btn" onclick="quickCopyNote(event, ${index})" title="Salin Catatan">
+                        <i class="fa-regular fa-copy"></i>
+                    </button>
+                </div>
+            `).join('');
+        }
+    }
+
+    // Salin Cepat Catatan Langsung Tanpa Membuka Modal
+    async function quickCopyNote(event, index) {
+        event.stopPropagation(); // Mencegah modal terbuka saat icon salin diklik
+        const note = currentNotesList[index];
+        const textToCopy = `${note.tittle}\n${note.description}`;
+        
+        try {
+            await navigator.clipboard.writeText(textToCopy);
+            alert(`Berhasil menyalin: "${note.tittle}"`);
+        } catch (err) {
+            alert("Gagal menyalin teks.");
+        }
+    }
+
+    function viewFullNote(index) {
+        document.getElementById('modalViewTitle').innerText = currentNotesList[index].tittle;
+        document.getElementById('modalViewBody').innerText = currentNotesList[index].description;
+        document.getElementById('noteViewModal').style.display = 'flex';
+    }
+    function closeNoteViewModal() { document.getElementById('noteViewModal').style.display = 'none'; }
+
+    // ====== FUNGSI DRIVE ======
+    async function loadDriveFiles() {
+        const container = document.getElementById('driveContainer');
+        const { data: files } = await supabaseClient.storage.from('documents').list('uploads');
+        if (files) {
+            container.innerHTML = files.map(file => {
+                let cleanName = file.name.substring(file.name.indexOf('_') + 1);
+                let publicUrl = supabaseClient.storage.from('documents').getPublicUrl(`uploads/${file.name}`).data.publicUrl;
+                return `
+                    <div class="item-row" style="cursor: default;">
+                        <div class="item-text-wrapper">
+                            <div class="item-title" title="${escapeHTML(cleanName)}">${escapeHTML(cleanName)}</div>
+                            <div class="item-meta"><a href="${publicUrl}" target="_blank" class="item-link">Buka File</a></div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            document.getElementById('driveFooter').innerText = `${files.length} Berkas`;
+        }
+    }
+
+    async function handleFileUpload(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        const filePath = `uploads/${Date.now()}_${file.name.replace(/[^a-zA-Z0-9]/g, '_')}`;
+        await supabaseClient.storage.from('documents').upload(filePath, file);
+        loadDriveFiles();
+    }
+
+    // ====== FUNGSI BOOKMARK ======
+    async function loadBookmarks() {
+        const container = document.getElementById('bookmarkContainer');
+        let { data: bookmarks } = await supabaseClient.from('bookmark').select('*').order('id', { ascending: false });
+        if (bookmarks) {
+            container.innerHTML = bookmarks.map(bk => `
+                <div class="item-row" style="cursor: default;">
+                    <div class="item-text-wrapper">
+                        <div class="item-title" title="${escapeHTML(bk.nama)}">${escapeHTML(bk.nama)}</div>
+                        <div class="item-meta"><a href="${bk.url}" target="_blank" class="item-link">${bk.url}</a></div>
+                    </div>
+                </div>
+            `).join('');
+            document.getElementById('bookmarkFooter').innerText = `${bookmarks.length} Tautan`;
+        }
+    }
+
+    // ====== FUNGSI OTA CALCULATOR ======
+    let h = [];
+    const inputEl = document.getElementById("input");
+    const otaEl = document.getElementById("ota");
+    const netEl = document.getElementById("net");
+    const grossEl = document.getElementById("gross");
+    const cutEl = document.getElementById("cut");
+    const statusEl = document.getElementById("status");
+    const historyBoxEl = document.getElementById("historyBox");
+
+    function initOTAGrid() {
+        const gridBox = document.getElementById("gridBox");
+        gridBox.innerHTML = [2,3,4,5,6,7,8,9].map(i => `<div class="ota-box" id="d${i}">÷${i}<br><b>0</b></div>`).join('');
+    }
+
+    function r(x){ return "Rp " + Math.round(x).toLocaleString("id-ID"); }
+    function n(x){ return Math.round(x).toLocaleString("id-ID"); }
+    function c(v){ return parseFloat((v||"").replace(/[^0-9]/g,''))||0; }
+
+    function calcOTA(){
+        let raw = inputEl.value;
+        let val = c(raw);
+        let o = otaEl.value;
+        
+        if(val > 0) inputEl.value = val.toLocaleString("id-ID");
+        if(!val){
+            netEl.innerHTML="Rp 0"; grossEl.innerHTML="Rp 0"; cutEl.innerHTML="Rp 0";
+            for(let i=2; i<=9; i++) {
+                document.getElementById("d"+i).innerHTML = "÷"+i+"<br><b>0</b>";
+            }
+            return null;
+        }
+        
+        let netV = (o=="traveloka") ? (val/0.82)*0.75 : val*0.88;
+        let grossV = (o=="traveloka") ? val/0.82 : val;
+        
+        netEl.innerHTML = r(netV);
+        grossEl.innerHTML = r(grossV);
+        cutEl.innerHTML = r(grossV - netV);
+        
+        for(let i=2; i<=9; i++) {
+            document.getElementById("d"+i).innerHTML = "÷"+i+"<br><b>"+n(netV/i)+"</b>";
+        }
+        
+        statusEl.innerHTML = "🟡 Belum disimpan";
+        statusEl.className = "ota-status ota-yellow";
+        return { netVal: netV, inputVal: val, ota: o };
+    }
+
+    function submitOTA(){
+        let res = calcOTA();
+        if(!res && inputEl.dataset.lastVal) {
+            res = JSON.parse(inputEl.dataset.lastVal);
+        }
+        
+        if(res){
+            h.push(res);
+            h.sort((a, b) => a.netVal - b.netVal);
+            
+            historyBoxEl.innerHTML = h.map(x => {
+                let splitValues = [2, 3, 4, 5, 6]
+                    .map(div => "<span>÷" + div + ":" + n(x.netVal / div) + "</span>")
+                    .join(" • ");
+                
+                return "<div class='ota-hist-item'>" +
+                    "<div class='ota-hist-main'>" + n(x.inputVal) + " -> " + n(x.netVal) + " [ " + x.ota.toUpperCase() + " ]</div>" +
+                    "<div class='ota-hist-split'>" + splitValues + "</div>" +
+                "</div>";
+            }).join("");
+            
+            let currentNet = netEl.innerHTML;
+            let currentGross = grossEl.innerHTML;
+            let currentCut = cutEl.innerHTML;
+            
+            inputEl.value = ""; 
+            
+            netEl.innerHTML = currentNet;
+            grossEl.innerHTML = currentGross;
+            cutEl.innerHTML = currentCut;
+            
+            statusEl.innerHTML = "🟢 Tersimpan ke History";
+            statusEl.className = "ota-status ota-green";
+        }
+    }
+    
+    inputEl.addEventListener('input', () => {
+        let val = c(inputEl.value);
+        let o = otaEl.value;
+        if(val > 0) {
+            let netV = (o=="traveloka") ? (val/0.82)*0.75 : val*0.88;
+            inputEl.dataset.lastVal = JSON.stringify({ netVal: netV, inputVal: val, ota: o });
+        }
+    });
+    
+    inputEl.oninput = calcOTA;
+    otaEl.onchange = calcOTA;
+
+    // ====== FUNGSI UBAH HURUF ======
+    async function pasteFromClipboard() {
+        try {
+            const text = await navigator.clipboard.readText();
+            const inputArea = document.getElementById('textConverterInput');
+            inputArea.value = text;
+            updateCharCount();
+        } catch (err) {
+            alert("Gagal mengakses clipboard. Berikan izin akses browser terlebih dahulu.");
+        }
+    }
+
+    async function convertToUppercaseAndCopy() {
+        const inputArea = document.getElementById('textConverterInput');
+        const originalText = inputArea.value.trim();
+        
+        if (!originalText) {
+            alert("Teks kosong!");
+            return;
+        }
+
+        const uppercaseText = originalText.toUpperCase();
+        inputArea.value = uppercaseText;
+        updateCharCount();
+
+        try {
+            await navigator.clipboard.writeText(uppercaseText);
+            const footer = document.getElementById('textConverterFooter');
+            footer.innerText = "✓ Berhasil Dikapitalisasi & Disalin!";
+            setTimeout(updateCharCount, 2500); 
+        } catch (err) {
+            alert("Gagal menyalin hasil.");
+        }
+    }
+
+    function clearTextConverter() {
+        document.getElementById('textConverterInput').value = "";
+        updateCharCount();
+    }
+    function updateCharCount() {
+        const text = document.getElementById('textConverterInput').value;
+        document.getElementById('textConverterFooter').innerText = `${text.length} Karakter`;
+    }
+</script>
+
+</body>
+</html>
