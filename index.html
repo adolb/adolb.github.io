@@ -460,7 +460,6 @@
     </div>
 </div>
 
-<!-- === MODAL VIEW CATATAN (DENGAN TAMBAHAN TOMBOL) === -->
 <div class="modal-overlay" id="noteViewModal" onclick="closeNoteViewModal()">
     <div class="modal-box" onclick="event.stopPropagation()">
         <div class="modal-title" id="modalViewTitle">Judul</div>
@@ -517,7 +516,6 @@
     </div>
 </div>
 
-<!-- === MODAL VIEW & EDIT PENGINGAT (BARU) === -->
 <div class="modal-overlay" id="reminderViewModal" onclick="closeReminderViewModal()">
     <div class="modal-box" onclick="event.stopPropagation()">
         <div class="modal-title"><i class="fa-solid fa-bell" style="color:var(--ios-blue);"></i> Detail Pengingat</div>
@@ -885,12 +883,45 @@
                             <div class="item-title" title="${escapeHTML(cleanName)}">${escapeHTML(cleanName)}</div>
                             <div class="item-meta"><a href="${publicUrl}" target="_blank" class="item-link">Buka File</a></div>
                         </div>
+                        <div style="cursor: pointer; color: var(--ios-blue); font-size: 18px; padding: 4px 8px; transition: opacity 0.2s; flex-shrink: 0;" 
+                             onclick="downloadDriveFile('${file.name}', '${cleanName}')" 
+                             onmouseover="this.style.opacity='0.7'" 
+                             onmouseout="this.style.opacity='1'" 
+                             title="Unduh File">
+                            <i class="fa-solid fa-arrow-down"></i>
+                        </div>
                     </div>
                 `;
             }).join('');
             document.getElementById('driveFooter').innerText = `${sortedFiles.length} Berkas`;
         }
     }
+
+    // Fungsi baru untuk memicu unduhan file secara langsung
+    async function downloadDriveFile(fileName, cleanName) {
+        try {
+            // Mengambil data file sebagai Blob dari Supabase
+            const { data, error } = await supabaseClient.storage.from('documents').download(`uploads/${fileName}`);
+            if (error) throw error;
+            
+            // Membuat URL sementara untuk file tersebut
+            const url = URL.createObjectURL(data);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = cleanName; // Nama asli file saat disimpan ke perangkat
+            
+            // Memicu klik unduhan secara tersembunyi
+            document.body.appendChild(a);
+            a.click();
+            
+            // Membersihkan elemen dan memori setelah selesai
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        } catch (error) {
+            alert("Gagal mengunduh file: " + error.message);
+        }
+    }
+
     async function handleFileUpload(event) {
         const file = event.target.files[0]; if (!file) return;
         const pWrap = document.getElementById('driveProgressWrap'); const pBar = document.getElementById('driveProgressBar');
