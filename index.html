@@ -100,14 +100,23 @@
     /* --- LAYOUT GRID --- */
     .dashboard-grid {
         width: 100%;
-        max-width: 960px;
+        max-width: 1150px;
+        margin: 0 auto;
+        padding: 0 40px;
         display: grid;
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: repeat(3, 1fr);
         gap: 24px;
         align-items: start;
     }
 
     .grid-column { display: flex; flex-direction: column; gap: 24px; min-width: 0; }
+
+    @media (max-width: 1024px) {
+        .dashboard-grid { 
+            grid-template-columns: 1fr 1fr;
+            padding: 0 24px;
+        }
+    }
 
     @media (max-width: 768px) {
         .dashboard-grid { grid-template-columns: 1fr; padding: 0; }
@@ -435,6 +444,7 @@
 <h1 class="main-welcome-title" id="salam-judul">Welcome, Wildan</h1>
 
 <div class="dashboard-grid">
+    <!-- KOLOM 1 -->
     <div class="grid-column">
         <div class="icloud-card">
             <div class="card-header">
@@ -474,7 +484,10 @@
             </div>
             <div class="card-footer" id="notesFooter">0 Catatan</div>
         </div>
+    </div>
 
+    <!-- KOLOM 2 -->
+    <div class="grid-column">
         <div class="icloud-card">
             <div class="card-header">
                 <div class="header-left">
@@ -493,9 +506,7 @@
             </div>
             <div class="card-footer" id="bookmarkFooter">0 Tautan</div>
         </div>
-    </div>
-
-    <div class="grid-column">
+        
         <div class="icloud-card">
             <div class="card-header">
                 <div class="header-left">
@@ -521,7 +532,10 @@
             </div>
             <div class="card-footer" id="driveFooter">0 Berkas</div>
         </div>
+    </div>
 
+    <!-- KOLOM 3 -->
+    <div class="grid-column">
         <div class="icloud-card">
             <div class="card-header">
                 <div class="header-left">
