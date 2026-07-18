@@ -68,15 +68,17 @@
         transition: background 0.3s, color 0.3s, border-color 0.3s;
     }
 
-    body {
+        body {
         background: var(--bg-gradient);
         min-height: 100vh;
-        padding: calc(24px + env(safe-area-inset-top)) 24px 80px 24px;
+        /* Menghapus margin bawaan yang disebabkan safe area */
+        padding: 0; 
+        margin: 0;
         display: flex;
         flex-direction: column;
-        justify-content: flex-start;
         align-items: center;
-        overflow-x: hidden;
+        /* Memaksa konten untuk mengabaikan area notch */
+        padding-top: env(safe-area-inset-top);
     }
 
     /* Mengunci scroll saat layar login aktif */
