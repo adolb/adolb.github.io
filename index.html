@@ -91,7 +91,7 @@
         font-size: 32px;
         font-weight: 700;
         color: var(--title-color);
-        margin-bottom: 32px;
+        margin-bottom: 24px;
         text-align: center;
         letter-spacing: -0.5px;
         text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
@@ -121,7 +121,7 @@
     @media (max-width: 768px) {
         .dashboard-grid { grid-template-columns: 1fr; padding: 0; }
         body { padding: calc(24px + env(safe-area-inset-top)) 12px 100px 12px; }
-        .main-welcome-title { font-size: 28px; margin-bottom: 24px; }
+        .main-welcome-title { font-size: 28px; margin-bottom: 16px; }
     }
 
     /* --- KOMPONEN KARTU ICLOUD --- */
@@ -394,6 +394,54 @@
             transform: translateY(0);
         }
     }
+
+    /* --- SEARCH BAR GLASSMORPHISM --- */
+    .global-search-container {
+        width: 100%;
+        max-width: 600px;
+        margin: 0 auto 32px auto;
+        padding: 0 20px;
+        position: relative;
+        z-index: 10;
+    }
+    .global-search-input {
+        width: 100%;
+        padding: 14px 20px 14px 44px;
+        font-size: 16px;
+        border-radius: 20px;
+        background: rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(40px);
+        -webkit-backdrop-filter: blur(40px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        color: var(--title-color);
+        outline: none;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        transition: all 0.3s;
+    }
+    [data-theme="dark"] .global-search-input {
+        background: rgba(15, 23, 42, 0.4);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .global-search-input::placeholder { color: rgba(255,255,255,0.8); }
+    .global-search-icon {
+        position: absolute;
+        left: 36px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: rgba(255,255,255,0.9);
+        font-size: 16px;
+    }
+
+    /* --- MODE LANDSCAPE JEDA --- */
+    @media (orientation: landscape) and (max-height: 768px) {
+        body {
+            padding-top: calc(env(safe-area-inset-top) + 30px);
+            padding-bottom: calc(env(safe-area-inset-bottom) + 30px);
+        }
+        .dashboard-grid {
+            padding: 0 40px;
+        }
+    }
   </style>
 </head>
 <body class="locked">
@@ -431,7 +479,7 @@
 <div class="mac-login-wrapper" id="loginWrapper">
     <div class="mac-login-overlay">
         <img src="profil.jpg" class="mac-avatar" alt="Profile">
-        <div class="mac-username">Wildan</div>
+        <div class="mac-username" id="loginGreeting">Wildan</div>
         <div class="mac-password-container">
             <input type="password" class="mac-password-input" id="passwordInput" placeholder="" onkeypress="handleKeyPress(event)" autofocus>
             <button class="mac-submit-btn" onclick="checkPassword()">
@@ -442,6 +490,11 @@
 </div>
 
 <h1 class="main-welcome-title" id="salam-judul">Welcome, Wildan</h1>
+
+<div class="global-search-container">
+    <i class="fa-solid fa-magnifying-glass global-search-icon"></i>
+    <input type="text" id="globalSearch" class="global-search-input" placeholder="" oninput="handleGlobalSearch()">
+</div>
 
 <div class="dashboard-grid">
     <!-- KOLOM 1 -->
@@ -630,6 +683,7 @@
         <div class="modal-body" id="modalViewBody">Isi lengkap catatan Anda...</div>
         
         <div class="modal-action-buttons">
+            <button class="btn-action" style="background:#8b5cf6; color:white; font-size:14px; padding:10px;" id="btnPinNote" onclick="togglePinNote()"><i class="fa-solid fa-thumbtack"></i> Sematkan</button>
             <button class="btn-action" style="background:#16a34a; color:white; font-size:14px; padding:10px;" onclick="copyNote()"><i class="fa-regular fa-copy"></i> Copy</button>
             <button class="btn-action" style="background:#f59e0b; color:white; font-size:14px; padding:10px;" onclick="prepareEditNote()"><i class="fa-regular fa-pen-to-square"></i> Edit</button>
             <button class="btn-action" style="background:#ef4444; color:white; font-size:14px; padding:10px;" onclick="deleteNote()"><i class="fa-solid fa-trash-can"></i> Hapus</button>
@@ -819,7 +873,9 @@
             ucapan = 'Good Night';
         }
 
-        document.getElementById('salam-judul').innerText = ucapan + ', Wildan';
+        const salamLengkap = ucapan + ', Wildan';
+        document.getElementById('salam-judul').innerText = salamLengkap;
+        document.getElementById('loginGreeting').innerText = salamLengkap;
     }
 
     window.onload = function() {
@@ -1008,7 +1064,12 @@
         }
     }
 
-    // --- MODUL CATATAN & BOOKMARK ---
+    // --- MODUL CATATAN & BOOKMARK & PENCARIAN ---
+    function handleGlobalSearch() {
+        const query = document.getElementById('globalSearch').value;
+        loadNotes(query);
+    }
+
     function openBookmarkModal() {
         isBookmarkMode = true;
         document.getElementById('modalTitle').innerHTML = '<i class="fa-solid fa-bookmark" style="color:#16a34a; margin-right:8px;"></i>Bookmark Baru';
@@ -1042,32 +1103,89 @@
             try { await supabaseClient.from('catatan').insert([{ tittle: judul, description: isi }]); closeCreateNoteModal(); loadNotes(); } catch (e) { alert(e.message); }
         }
     }
-    async function loadNotes() {
+    
+    async function loadNotes(searchQuery = '') {
         const container = document.getElementById('notesContainer');
         container.innerHTML = '<div class="item-meta">Memuat catatan...</div>';
-        let { data: catatan } = await supabaseClient.from('catatan').select('*').order('id', { ascending: false });
+        
+        // Tarik data dengan urutan is_pinned (true) di atas, lalu berdasarkan ID
+        let { data: catatan } = await supabaseClient
+            .from('catatan')
+            .select('*')
+            .order('is_pinned', { ascending: false })
+            .order('id', { ascending: false });
+
         currentNotesList = catatan || [];
-        if (catatan && catatan.length > 0) {
-            document.getElementById('notesFooter').innerText = `${catatan.length} Catatan`;
-            container.innerHTML = catatan.map((note, index) => `
-                <div class="item-row" onclick="viewFullNote(${index})">
-                    <div class="item-text-wrapper">
-                        <div class="item-title">${escapeHTML(note.tittle)}</div>
-                        <div class="item-meta"><span>${escapeHTML(note.description)}</span></div>
+        
+        // Jika ada input pencarian, filter datanya (tidak membedakan huruf besar/kecil)
+        let filteredNotes = currentNotesList;
+        if (searchQuery.trim() !== '') {
+            const q = searchQuery.toLowerCase();
+            filteredNotes = currentNotesList.filter(note => 
+                (note.tittle && note.tittle.toLowerCase().includes(q)) || 
+                (note.description && note.description.toLowerCase().includes(q))
+            );
+        }
+
+        if (filteredNotes.length > 0) {
+            document.getElementById('notesFooter').innerText = `${filteredNotes.length} Catatan`;
+            container.innerHTML = filteredNotes.map((note) => {
+                // Kita butuh index asli (dari currentNotesList) untuk viewFullNote
+                const originalIndex = currentNotesList.findIndex(n => n.id === note.id);
+                const pinIcon = note.is_pinned ? '<i class="fa-solid fa-thumbtack" style="color: #f59e0b; font-size: 14px; flex-shrink: 0;"></i>' : '';
+                
+                return `
+                    <div class="item-row" onclick="viewFullNote(${originalIndex})">
+                        <div class="item-text-wrapper">
+                            <div class="item-title">${escapeHTML(note.tittle)}</div>
+                            <div class="item-meta"><span>${escapeHTML(note.description)}</span></div>
+                        </div>
+                        ${pinIcon}
                     </div>
-                </div>
-            `).join('');
+                `;
+            }).join('');
         } else {
             document.getElementById('notesFooter').innerText = `0 Catatan`;
             container.innerHTML = '<div class="item-meta">Tidak ada catatan ditemukan.</div>';
         }
     }
+
     function viewFullNote(index) {
         currentViewedNote = currentNotesList[index];
         document.getElementById('modalViewTitle').innerText = currentViewedNote.tittle;
         document.getElementById('modalViewBody').innerText = currentViewedNote.description;
+        
+        const pinBtn = document.getElementById('btnPinNote');
+        if(currentViewedNote.is_pinned) {
+            pinBtn.innerHTML = '<i class="fa-solid fa-thumbtack-slash"></i> Lepas Pin';
+            pinBtn.style.background = '#64748b'; // warna abu-abu
+        } else {
+            pinBtn.innerHTML = '<i class="fa-solid fa-thumbtack"></i> Sematkan';
+            pinBtn.style.background = '#8b5cf6'; // warna ungu
+        }
+        
         document.getElementById('noteViewModal').style.display = 'flex';
     }
+
+    async function togglePinNote() {
+        if(!currentViewedNote) return;
+        const newPinStatus = !currentViewedNote.is_pinned; // Balikkan status
+        
+        try {
+            const { error } = await supabaseClient.from('catatan')
+                .update({ is_pinned: newPinStatus })
+                .eq('id', currentViewedNote.id);
+                
+            if(error) throw error;
+            
+            closeNoteViewModal();
+            // Muat ulang dengan kata kunci yang mungkin sedang diketik di kolom search
+            loadNotes(document.getElementById('globalSearch').value); 
+        } catch (e) {
+            alert("Gagal memperbarui status sematan: " + e.message);
+        }
+    }
+
     function closeNoteViewModal() { document.getElementById('noteViewModal').style.display = 'none'; }
     function copyNote() {
         if(currentViewedNote) {
