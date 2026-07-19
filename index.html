@@ -97,7 +97,7 @@
         text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     }
 
-    /* --- LAYOUT GRID (DIUBAH MENJADI 2 KOLOM MENDATAR) --- */
+    /* --- LAYOUT GRID --- */
     .dashboard-grid {
         width: 100%;
         max-width: 1000px;
@@ -112,7 +112,7 @@
     /* JARAK SAAT LANDSCAPE / LAYAR BESAR */
     @media (min-width: 769px) {
         .main-welcome-title { 
-            margin-top: 80px; /* Memberikan jarak kedalam yang banyak pada landscape */
+            margin-top: 80px; 
             font-size: 38px;
             margin-bottom: 32px;
         }
@@ -155,36 +155,37 @@
     .card-body { background: var(--card-body-bg); padding: 20px; flex: 1; overflow-y: auto; min-width: 0; }
     .card-footer { padding: 6px 20px 10px 20px; background: var(--card-body-bg); font-size: 13px; color: var(--text-meta); border-top: 1px solid var(--border-color); flex-shrink: 0; }
     
-    /* WIDGET KALENDER DIPERBAIKI PRESISINYA */
+    /* WIDGET KALENDER DIPERBAIKI (TIDAK ADA SCROLL) */
     .calendar-grid {
         display: grid;
         grid-template-columns: repeat(7, 1fr);
-        gap: 12px 6px; /* Jarak standar agar tidak mepet */
+        gap: 6px 4px; /* Gap dirapatkan agar fit */
         text-align: center;
-        font-size: 14px;
+        font-size: 13px; /* Ukuran font disesuaikan sedikit */
         font-weight: 500;
         color: var(--text-primary);
-        margin: auto 0;
+        margin: 0;
+        width: 100%;
     }
     .calendar-grid div {
         display: flex;
         align-items: center;
         justify-content: center;
-        height: 28px; /* Tinggi diseragamkan agar atas & bawah pas */
+        height: 26px; /* Tinggi disesuaikan agar tidak over */
     }
     .day-label { 
         color: var(--text-meta); 
         font-size: 12px; 
         font-weight: 600; 
-        padding-bottom: 6px; 
-        border-bottom: 1px solid var(--border-color); /* Garis pemisah antara header hari dan angka */
+        padding-bottom: 4px; 
+        border-bottom: 1px solid var(--border-color); 
     }
     .today {
         background-color: var(--ios-red);
         color: white;
         border-radius: 50%;
-        width: 28px;
-        height: 28px;
+        width: 26px;
+        height: 26px;
         margin: 0 auto;
     }
 
@@ -367,37 +368,34 @@
     <input type="text" id="globalSearch" class="global-search-input" placeholder="" oninput="handleGlobalSearch()">
 </div>
 
-<!-- Semua Widget Diletakkan Langsung di Bawah Grid, Otomatis 2 Kolom -->
 <div class="dashboard-grid">
     
     <!-- =====================================
-         1. WIDGET KALENDER (Paling Atas)
+         1. WIDGET KALENDER (DIPERBARUI)
          ===================================== -->
     <div class="icloud-card">
+        <!-- Banner/Header Kalender Diperbarui (Judul Pindah Kesini, Jam Dihapus) -->
         <div class="card-header">
             <div class="header-left">
                 <div class="app-icon" style="background: var(--ios-red); color: white;"><i class="fa-regular fa-calendar"></i></div>
                 <div class="app-info" style="display: flex; flex-direction: column; gap: 4px;">
-                    <h2 id="dayName" style="margin: 0; line-height: 1;">Hari</h2>
+                    <h2 id="dayName" style="margin: 0; line-height: 1; font-size: 15px;">Hari</h2>
                     <div style="display: flex; flex-direction: column; gap: 2px;">
-                        <span id="dateMain" style="line-height: 1;">Tanggal</span>
-                        <span id="hijriDate" style="font-size: 11px; opacity: 0.8; line-height: 1;"></span>
+                        <span id="dateMain" style="line-height: 1; font-size: 12px;">Tanggal</span>
+                        <span id="hijriDate" style="font-size: 10px; opacity: 0.8; line-height: 1;"></span>
                     </div>
                 </div>
             </div>
-            <div class="header-right" id="clock" style="font-weight:600; font-size:16px; color: var(--text-primary);">--:--</div>
+            <!-- Tombol navigasi bulan ditaruh di banner ini -->
+            <div class="header-right" style="display: flex; align-items: center; gap: 12px; font-weight: 600; font-size: 14px; color: var(--text-primary);">
+                <i class="fa-solid fa-chevron-left" style="cursor:pointer;" onclick="changeMonth(-1)"></i>
+                <span id="calendarMonthYear" style="min-width: 90px; text-align: center; display: inline-block;">Bulan Tahun</span>
+                <i class="fa-solid fa-chevron-right" style="cursor:pointer;" onclick="changeMonth(1)"></i>
+            </div>
         </div>
-        <div class="card-body" style="display: flex; flex-direction: column; justify-content: center;">
-            <div class="calendar-grid">
-                <div class="day-label">S</div><div class="day-label">S</div><div class="day-label">R</div>
-                <div class="day-label">K</div><div class="day-label">J</div><div class="day-label">S</div>
-                <div class="day-label">M</div>
-                
-                <div></div><div>1</div><div>2</div><div>3</div><div>4</div><div>5</div><div>6</div>
-                <div>7</div><div>8</div><div>9</div><div>10</div><div>11</div><div>12</div><div>13</div>
-                <div>14</div><div>15</div><div>16</div><div class="today">17</div><div>18</div><div>19</div><div>20</div>
-                <div>21</div><div>22</div><div>23</div><div>24</div><div>25</div><div>26</div><div>27</div>
-                <div>28</div><div>29</div><div>30</div><div>31</div>
+        <div class="card-body" style="display: flex; flex-direction: column; justify-content: center; padding: 10px 16px;">
+            <div class="calendar-grid" id="calendarDaysGrid">
+                <!-- Data hari akan dirender di sini via JavaScript -->
             </div>
         </div>
         <div class="card-footer" id="calendarFooter" style="text-align:center;">Memuat pengingat...</div>
@@ -700,19 +698,69 @@
         document.getElementById('salam-judul').innerText = salamLengkap; document.getElementById('loginGreeting').innerText = salamLengkap;
     }
 
-    // --- FUNGSI UPDATE KALENDER ---
+    // --- FUNGSI UPDATE KALENDER WAKTU HEADER ---
     function updateCalendarWidget() {
         const now = new Date();
-        document.getElementById("clock").innerText = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+        const clockEl = document.getElementById("clock");
+        // Update jam hanya jika elemen jam masih ada, ini ditambahkan agar script tidak error
+        if (clockEl) {
+            clockEl.innerText = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+        }
+        
         document.getElementById("dayName").innerText = now.toLocaleDateString('id-ID', { weekday: 'long' }).toUpperCase();
         document.getElementById("dateMain").innerText = now.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
         const hijri = new Intl.DateTimeFormat('id-u-ca-islamic-umalqura', { day: 'numeric', month: 'long', year: 'numeric' }).format(now);
         document.getElementById("hijriDate").innerText = hijri;
     }
 
+    // --- FUNGSI GENERATE GRID KALENDER DINAMIS ---
+    let currentCalDate = new Date();
+    
+    function renderCalendar() {
+        const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+        const year = currentCalDate.getFullYear();
+        const month = currentCalDate.getMonth();
+        
+        document.getElementById("calendarMonthYear").innerText = `${monthNames[month]} ${year}`;
+        
+        const firstDay = new Date(year, month, 1).getDay(); // 0 (Minggu) hingga 6 (Sabtu)
+        const startDay = firstDay === 0 ? 6 : firstDay - 1; // Sesuaikan jika Senin adalah hari pertama
+        
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        
+        let gridHtml = `
+            <div class="day-label">S</div><div class="day-label">S</div><div class="day-label">R</div>
+            <div class="day-label">K</div><div class="day-label">J</div><div class="day-label">S</div>
+            <div class="day-label">M</div>
+        `;
+        
+        // Buat kotak kosong untuk jarak hari awal
+        for (let i = 0; i < startDay; i++) {
+            gridHtml += `<div></div>`;
+        }
+        
+        const todayReal = new Date();
+        // Buat kotak tanggal per hari
+        for (let i = 1; i <= daysInMonth; i++) {
+            if (i === todayReal.getDate() && month === todayReal.getMonth() && year === todayReal.getFullYear()) {
+                gridHtml += `<div class="today">${i}</div>`;
+            } else {
+                gridHtml += `<div>${i}</div>`;
+            }
+        }
+        
+        document.getElementById("calendarDaysGrid").innerHTML = gridHtml;
+    }
+
+    function changeMonth(offset) {
+        currentCalDate.setMonth(currentCalDate.getMonth() + offset);
+        renderCalendar();
+    }
+
     window.onload = function() {
         loadNotes(); loadDriveFiles(); loadBookmarks(); fetchReminders(); initOTAGrid(); initTheme(); aturUcapanJudul(); 
         updateCalendarWidget(); setInterval(updateCalendarWidget, 60000); // Mulai Kalender
+        renderCalendar(); // Render grid kalender pertama kali
     };
 
     function updateLoginNotifications() {
