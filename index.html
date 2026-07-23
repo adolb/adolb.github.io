@@ -734,7 +734,7 @@
         const loginWrapper = document.getElementById("loginWrapper");
         const loginNoti = document.getElementById("loginNotiContainer");
 
-        if (inputField.value === CORRECT_PASSWORD) {
+        if (inputField.value.toLowerCase() === CORRECT_PASSWORD) {
             loginWrapper.style.opacity = "0";
             loginWrapper.style.transform = "scale(1.05)";
             if(loginNoti) loginNoti.style.display = "none"; 
