@@ -1,5 +1,3 @@
-final html dengan music player
-
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -143,7 +141,6 @@ final html dengan music player
     .bookmark-icon { background: #dcfce7; color: #16a34a; }
     .calc-icon { background: #fee2e2; color: #dc2626; }
     .text-icon { background: #e8f2ff; color: var(--ios-blue); }
-    .music-icon { background: #ffe4e6; color: #e11d48; }
     
     .app-info { min-width: 0; }
     .app-info h2 { font-size: 16px; font-weight: 600; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-transform: capitalize; }
@@ -237,53 +234,6 @@ final html dengan music player
     .btn-teks.blue-mode { background: var(--ios-blue); }
     .btn-teks.red-mode { background: var(--ios-red); }
 
-    /* --- CSS WIDGET MUSIC LOKAL (DARI HTML 2) --- */
-    .w2-header { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background: transparent; z-index: 10; border-bottom: 1px solid var(--border-color); }
-    .w2-header-info { display: flex; align-items: center; gap: 10px; flex: 1; overflow: hidden; }
-    .w2-header-icon { width: 36px; height: 36px; border-radius: 8px; object-fit: cover; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
-    .w2-header-text { display: flex; flex-direction: column; overflow: hidden; }
-    .w2-header-title { font-size: 0.9rem; font-weight: 700; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .w2-header-subtitle { font-size: 0.75rem; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 1px; }
-    .w2-header-controls { display: flex; align-items: center; gap: 6px; }
-    .w2-btn-ctrl { background: none; border: none; cursor: pointer; color: var(--ios-blue); display: flex; justify-content: center; align-items: center; transition: opacity 0.2s, transform 0.1s; }
-    .w2-btn-ctrl:active { transform: scale(0.85); opacity: 0.6; }
-    .w2-btn-ctrl svg { width: 20px; height: 20px; }
-    .w2-btn-play svg { width: 28px; height: 28px; }
-    .w2-mode-icon { display: none; }
-    .w2-mode-icon.active { display: block; }
-    #w2-btn-mode.mode-order { color: var(--text-secondary); }
-    #w2-btn-mode.mode-repeat { color: var(--ios-blue); }
-    #w2-btn-mode.mode-shuffle { color: #FF9500; }
-    #w2-btn-mode svg { width: 18px; height: 18px; }
-    .w2-progress-container { height: 4px; background: var(--input-bg); cursor: pointer; position: relative; width: 100%; }
-    .w2-progress-fill { height: 100%; background: var(--ios-blue); width: 0%; transition: width 0.1s linear; }
-    .w2-playlist-container { flex: 1; overflow-y: auto; padding: 0 0 50px 0; background: transparent; }
-    .w2-playlist-container::-webkit-scrollbar { width: 5px; }
-    .w2-playlist-container::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 10px; }
-    .w2-folder-header { background: var(--box-bg); padding: 8px 16px; font-size: 0.8rem; font-weight: 600; color: var(--box-text); display: flex; justify-content: space-between; align-items: center; cursor: pointer; position: sticky; top: 0; z-index: 5; border-bottom: 1px solid var(--border-color); }
-    .w2-folder-title-wrap { display: flex; align-items: center; gap: 6px; }
-    .w2-folder-icon { width: 16px; height: 16px; color: var(--ios-blue); }
-    .w2-folder-header svg.chevron { width: 16px; height: 16px; color: var(--text-meta); transition: transform 0.2s ease; }
-    .w2-folder-header.collapsed svg.chevron { transform: rotate(-90deg); }
-    .w2-folder-content { padding: 0 16px; transition: display 0.3s ease; }
-    .w2-folder-content.collapsed { display: none; }
-    .w2-playlist-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border-color); cursor: pointer; transition: background 0.2s; }
-    .w2-playlist-item:last-child { border-bottom: none; }
-    .w2-pl-left { display: flex; align-items: center; gap: 10px; overflow: hidden; }
-    .w2-pl-indicator { width: 16px; height: 16px; border-radius: 50%; border: 2px solid var(--input-border); display: flex; justify-content: center; align-items: center; flex-shrink: 0; }
-    .w2-playlist-item.active .w2-pl-indicator { background: #34C759; border-color: #34C759; }
-    .w2-playlist-item.active .w2-pl-indicator::after { content: ''; width: 5px; height: 8px; border: solid white; border-width: 0 2px 2px 0; transform: rotate(45deg); margin-bottom: 2px; }
-    .w2-pl-text { display: flex; flex-direction: column; overflow: hidden; }
-    .w2-pl-title { font-size: 0.85rem; font-weight: 500; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .w2-pl-artist { font-size: 0.75rem; color: var(--text-secondary); margin-top: 1px; }
-    .w2-playlist-item.active .w2-pl-title { color: var(--ios-blue); font-weight: 600; }
-    .w2-upload-bar { position: absolute; bottom: 0; left: 0; width: 100%; height: 48px; padding: 0 16px; background: var(--header-bg); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; z-index: 10;}
-    .w2-stats-info { font-size: 0.8rem; font-weight: 600; color: var(--text-primary); }
-    .w2-btn-upload { background: var(--input-bg); border: 1px solid var(--border-color); color: var(--ios-blue); cursor: pointer; display: flex; justify-content: center; align-items: center; width: 32px; height: 32px; border-radius: 50%; transition: transform 0.1s; }
-    .w2-btn-upload:active { transform: scale(0.85); }
-    .w2-btn-upload svg { width: 16px; height: 16px; }
-    #w2-file-input { display: none; }
-
     /* --- MODAL --- */
     .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(10px); display: none; justify-content: center; align-items: center; z-index: 9999; padding: 20px; }
     .modal-box { background: var(--card-body-bg); width: 100%; max-width: 520px; border-radius: 20px; padding: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); display: flex; flex-direction: column; max-height: 85vh; }
@@ -376,7 +326,7 @@ final html dengan music player
     .global-search-icon { position: absolute; left: 36px; top: 50%; transform: translateY(-50%); color: rgba(255,255,255,0.9); font-size: 16px; }
 
     /* ======================================================= */
-    /* --- POPUP SEARCH DROPDOWN --- */
+    /* --- NEW: POPUP SEARCH DROPDOWN --- */
     /* ======================================================= */
     .search-popup {
         position: absolute;
@@ -423,6 +373,7 @@ final html dengan music player
         overflow: hidden;
         text-overflow: ellipsis;
     }
+    /* Diperbarui agar bisa memuat teks 1 kalimat dan bisa turun baris rapi */
     .search-popup-desc {
         font-size: 13px;
         color: var(--text-meta);
@@ -472,16 +423,24 @@ final html dengan music player
 
 <h1 class="main-welcome-title" id="salam-judul">Welcome, Wildan</h1>
 
+<!-- =====================================
+     SEARCH BAR DENGAN POPUP 
+     ===================================== -->
 <div class="global-search-container">
     <i class="fa-solid fa-magnifying-glass global-search-icon"></i>
     <input type="text" id="globalSearch" class="global-search-input" placeholder="" oninput="handleGlobalSearch()">
+    
+    <!-- POPUP CONTAINER -->
     <div id="searchPopup" class="search-popup"></div>
 </div>
 
 <div class="dashboard-grid">
     
-    <!-- 1. WIDGET KALENDER -->
+    <!-- =====================================
+         1. WIDGET KALENDER (DIPERBARUI)
+         ===================================== -->
     <div class="icloud-card">
+        <!-- Banner/Header Kalender Diperbarui -->
         <div class="card-header">
             <div class="header-left">
                 <div class="app-icon" style="background: var(--ios-red); color: white;"><i class="fa-regular fa-calendar"></i></div>
@@ -493,6 +452,7 @@ final html dengan music player
                     </div>
                 </div>
             </div>
+            <!-- Tombol navigasi bulan -->
             <div class="header-right" style="display: flex; align-items: center; gap: 12px; font-weight: 600; font-size: 14px; color: var(--text-primary);">
                 <i class="fa-solid fa-chevron-left" style="cursor:pointer;" onclick="changeMonth(-1)"></i>
                 <span id="calendarMonthYear" style="min-width: 90px; text-align: center; display: inline-block;">Bulan Tahun</span>
@@ -500,12 +460,16 @@ final html dengan music player
             </div>
         </div>
         <div class="card-body" style="display: flex; flex-direction: column; justify-content: center; padding: 10px 16px;">
-            <div class="calendar-grid" id="calendarDaysGrid"></div>
+            <div class="calendar-grid" id="calendarDaysGrid">
+                <!-- Data hari akan dirender di sini via JavaScript -->
+            </div>
         </div>
         <div class="card-footer" id="calendarFooter" style="text-align:center;">Memuat pengingat...</div>
     </div>
 
-    <!-- 2. WIDGET PENGINGAT -->
+    <!-- =====================================
+         2. WIDGET PENGINGAT 
+         ===================================== -->
     <div class="icloud-card">
         <div class="card-header">
             <div class="header-left">
@@ -518,7 +482,9 @@ final html dengan music player
         <div class="card-footer" id="reminderFooter">0 Pengingat</div>
     </div>
 
-    <!-- 3. WIDGET CATATAN -->
+    <!-- =====================================
+         3. WIDGET CATATAN
+         ===================================== -->
     <div class="icloud-card">
         <div class="card-header">
             <div class="header-left">
@@ -536,7 +502,9 @@ final html dengan music player
         <div class="card-footer" id="notesFooter">0 Catatan</div>
     </div>
 
-    <!-- 4. WIDGET EMAIL -->
+    <!-- =====================================
+         NEW: WIDGET EMAIL
+         ===================================== -->
     <div class="icloud-card">
         <div class="card-header">
             <div class="header-left">
@@ -553,7 +521,9 @@ final html dengan music player
         <div class="card-footer" id="emailFooter">0 Email</div>
     </div>
 
-    <!-- 5. WIDGET BOOKMARK -->
+    <!-- =====================================
+         4. WIDGET BOOKMARK
+         ===================================== -->
     <div class="icloud-card">
         <div class="card-header">
             <div class="header-left">
@@ -568,7 +538,9 @@ final html dengan music player
         <div class="card-footer" id="bookmarkFooter">0 Tautan</div>
     </div>
     
-    <!-- 6. WIDGET DRIVE -->
+    <!-- =====================================
+         5. WIDGET DRIVE
+         ===================================== -->
     <div class="icloud-card">
         <div class="card-header">
             <div class="header-left">
@@ -590,7 +562,9 @@ final html dengan music player
         <div class="card-footer" id="driveFooter">0 Berkas</div>
     </div>
 
-    <!-- 7. WIDGET UBAH HURUF -->
+    <!-- =====================================
+         6. WIDGET UBAH HURUF
+         ===================================== -->
     <div class="icloud-card">
         <div class="card-header">
             <div class="header-left">
@@ -610,68 +584,9 @@ final html dengan music player
         </div>
     </div>
 
-    <!-- 8. WIDGET PEMUTAR MUSIK LOKAL (DARI HTML 2) -->
-    <div class="icloud-card" style="padding: 0; position: relative; display: flex; flex-direction: column; overflow: hidden;">
-      <audio id="w2-audio-player"></audio>
-      
-      <!-- HEADER -->
-      <div class="w2-header">
-        <div class="w2-header-info">
-          <img src="" alt="Cover" class="w2-header-icon" id="w2-header-cover">
-          <div class="w2-header-text">
-            <div class="w2-header-title" id="w2-header-title">Memuat...</div>
-            <div class="w2-header-subtitle" id="w2-header-artist">...</div>
-          </div>
-        </div>
-        
-        <!-- CONTROLS -->
-        <div class="w2-header-controls">
-          <button class="w2-btn-ctrl" id="w2-btn-prev" title="Previous">
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 6v12h2V6H7zm3 6l8.5 6V6L10 12z"/></svg>
-          </button>
-          
-          <button class="w2-btn-ctrl w2-btn-play" id="w2-btn-play" title="Play/Pause">
-            <svg id="w2-icon-play" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-            <svg id="w2-icon-pause" viewBox="0 0 24 24" fill="currentColor" style="display: none;"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
-          </button>
-
-          <button class="w2-btn-ctrl" id="w2-btn-next" title="Next">
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M15 6v12h2V6h-2zM14 12L5.5 6v12L14 12z"/></svg>
-          </button>
-
-          <button class="w2-btn-ctrl mode-order" id="w2-btn-mode" title="Ubah Mode Play">
-            <svg class="w2-mode-icon w2-icon-order active" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line>
-            </svg>
-            <svg class="w2-mode-icon w2-icon-repeat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="17 1 21 5 17 9"></polyline><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><polyline points="7 23 3 19 7 15"></polyline><path d="M21 13v2a4 4 0 0 1-4 4H3"></path>
-            </svg>
-            <svg class="w2-mode-icon w2-icon-shuffle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="16 3 21 3 21 8"></polyline><line x1="4" y1="20" x2="21" y2="3"></line><polyline points="21 16 21 21 16 21"></polyline><line x1="15" y1="15" x2="21" y2="21"></line><line x1="4" y1="4" x2="9" y2="9"></line>
-            </svg>
-          </button>
-        </div>
-      </div>
-
-      <!-- PROGRESS & PLAYLIST -->
-      <div class="w2-progress-container" id="w2-progress-container">
-        <div class="w2-progress-fill" id="w2-progress-fill"></div>
-      </div>
-      <div class="w2-playlist-container" id="w2-playlist"></div>
-
-      <!-- BOTTOM BAR: STATS & UPLOAD -->
-      <div class="w2-upload-bar">
-        <div class="w2-stats-info" id="w2-stat-text">0 Music, 0 Albums</div>
-        <button class="w2-btn-upload" id="w2-btn-upload" title="Tambah Musik Lokal">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline>
-          </svg>
-        </button>
-        <input type="file" id="w2-file-input" accept="audio/*" multiple>
-      </div>
-    </div>
-
-    <!-- 9. WIDGET OTA CALCULATOR -->
+    <!-- =====================================
+         7. WIDGET OTA CALCULATOR 
+         ===================================== -->
     <div class="icloud-card ota-card-layout">
         <div class="card-header">
             <div class="header-left">
@@ -717,7 +632,7 @@ final html dengan music player
 </div>
 
 <!-- ======================================================= -->
-<!-- --- SEMUA MODAL POP-UP --- -->
+<!-- --- SEMUA MODAL POP-UP TETAP SAMA SEPERTI ASLINYA ---   -->
 <!-- ======================================================= -->
 
 <div class="ios-full-overlay" id="alertOverlay">
@@ -867,6 +782,7 @@ final html dengan music player
     const SUPABASE_ANON_KEY = "sb_publishable_LnE9IH5KKDzdV-gj9tIb6w_uOGVZi4o";
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { auth: { persistSession: false, autoRefreshToken: false } });
 
+    // Tambahan Global Array Untuk Penampung Data HTML Supaya Bisa Di-search Menyeluruh
     let currentNotesList = []; 
     let currentReminders = []; 
     let currentBookmarksList = []; 
@@ -886,6 +802,7 @@ final html dengan music player
         document.getElementById('salam-judul').innerText = salamLengkap; document.getElementById('loginGreeting').innerText = salamLengkap;
     }
 
+    // --- FUNGSI UPDATE KALENDER WAKTU HEADER ---
     function updateCalendarWidget() {
         const now = new Date();
         const clockEl = document.getElementById("clock");
@@ -899,7 +816,9 @@ final html dengan music player
         document.getElementById("hijriDate").innerText = hijri;
     }
 
+    // --- FUNGSI GENERATE GRID KALENDER DINAMIS ---
     let currentCalDate = new Date();
+    
     function renderCalendar() {
         const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
         const year = currentCalDate.getFullYear();
@@ -907,8 +826,9 @@ final html dengan music player
         
         document.getElementById("calendarMonthYear").innerText = `${monthNames[month]} ${year}`;
         
-        const firstDay = new Date(year, month, 1).getDay(); 
-        const startDay = firstDay === 0 ? 6 : firstDay - 1; 
+        const firstDay = new Date(year, month, 1).getDay(); // 0 (Minggu) hingga 6 (Sabtu)
+        const startDay = firstDay === 0 ? 6 : firstDay - 1; // Sesuaikan jika Senin adalah hari pertama
+        
         const daysInMonth = new Date(year, month + 1, 0).getDate();
         
         let gridHtml = `
@@ -1044,23 +964,36 @@ final html dengan music player
     }
     async function deleteReminder() { if(confirm("Yakin hapus?")) { await supabaseClient.from('pengingat').delete().eq('id', currentViewedReminder.id); closeReminderViewModal(); fetchReminders(); } }
 
+    // =======================================================
+    // --- FUNGSI EKSTRAK KALIMAT & HIGHLIGHT BOLD ---
+    // =======================================================
     function getSnippetHighlight(text, query) {
         if (!text) return "";
+        // Bersihkan dari tag html kotor jika ada sebelum di match
         let cleanText = text.replace(/<[^>]*>?/gm, ''); 
+        // Pisahkan teks berdasarkan kalimat (titik, tanya, seru, atau ganti baris)
         const sentences = cleanText.match(/[^.!?\n]+[.!?\n]*/g) || [cleanText];
+        
         let matched = sentences.find(s => s.toLowerCase().includes(query.toLowerCase()));
+        
         if (matched) {
             matched = matched.trim();
+            // Wrap kata pencarian dengan <strong> yang ditambahkan style bold sesuai primary text
             const regex = new RegExp(`(${query})`, 'gi');
             return matched.replace(regex, '<strong style="color:var(--text-primary); font-weight:700;">$1</strong>');
         }
+        // Fallback jika tidak ditemukan (mungkin nyangkut di judul)
         return escapeHTML(cleanText.substring(0, 60)) + "...";
     }
 
+    // =======================================================
+    // --- FUNGSI PENCARIAN GLOBAL BARU (POP-UP) DIPERBARUI ---
+    // =======================================================
     function handleGlobalSearch() { 
         const query = document.getElementById('globalSearch').value.toLowerCase().trim();
         const popup = document.getElementById('searchPopup');
 
+        // Sembunyikan popup jika input kosong
         if (query === '') {
             popup.style.display = 'none';
             return;
@@ -1078,6 +1011,7 @@ final html dengan music player
             return escaped;
         }
 
+        // 1. Cari di Catatan
         if (currentNotesList && currentNotesList.length > 0) {
             currentNotesList.forEach((note, index) => {
                 const isMatch = (note.tittle && note.tittle.toLowerCase().includes(query)) || 
@@ -1096,6 +1030,7 @@ final html dengan music player
             });
         }
 
+        // 2. Cari di Pengingat
         if (currentReminders && currentReminders.length > 0) {
             currentReminders.forEach(rem => {
                 if (rem.content && rem.content.toLowerCase().includes(query)) {
@@ -1110,6 +1045,7 @@ final html dengan music player
             });
         }
 
+        // 3. Cari di Email
         if (typeof emailsData !== 'undefined' && emailsData.length > 0) {
             emailsData.forEach((email, index) => {
                 const isMatch = (email.subject && email.subject.toLowerCase().includes(query)) || 
@@ -1118,9 +1054,11 @@ final html dengan music player
                 if (isMatch) {
                     let senderClean = cleanSenderName(email.sender);
                     let descDisp = `Dari: ${email.sender.toLowerCase().includes(query) ? highlightTitle(senderClean) : escapeHTML(senderClean)}`;
+                    
                     if (email.body && email.body.toLowerCase().includes(query)) {
                         descDisp += `<br><span style="color:#94a3b8;">- ${getSnippetHighlight(email.body, query)}</span>`;
                     }
+                    
                     results.push({ 
                         type: 'Email', 
                         title: highlightTitle(email.subject || 'Tanpa Subjek'), 
@@ -1131,6 +1069,7 @@ final html dengan music player
             });
         }
         
+        // 4. Cari di Bookmark (Data yang sudah tersimpan di lokal memori via HTML)
         if (currentBookmarksList && currentBookmarksList.length > 0) {
             currentBookmarksList.forEach(bk => {
                 const isMatch = (bk.nama && bk.nama.toLowerCase().includes(query)) || 
@@ -1146,6 +1085,7 @@ final html dengan music player
             });
         }
 
+        // 5. Cari di Drive File (Data yang sudah tersimpan di lokal memori via HTML)
         if (currentDriveList && currentDriveList.length > 0) {
             currentDriveList.forEach(file => {
                 let cleanName = file.name.substring(file.name.indexOf('_') + 1);
@@ -1160,6 +1100,7 @@ final html dengan music player
             });
         }
 
+        // Render hasil ke dalam Popup
         if (results.length > 0) {
             popup.innerHTML = results.map(res => `
                 <div class="search-popup-item" onclick="${res.action}; document.getElementById('searchPopup').style.display='none'; document.getElementById('globalSearch').value='';">
@@ -1175,6 +1116,7 @@ final html dengan music player
         }
     }
 
+    // Menutup popup saat klik di luar kotak pencarian
     document.addEventListener('click', function(event) {
         const searchContainer = document.querySelector('.global-search-container');
         const popup = document.getElementById('searchPopup');
@@ -1182,6 +1124,8 @@ final html dengan music player
             popup.style.display = 'none';
         }
     });
+    // =======================================================
+
 
     function openBookmarkModal() {
         isBookmarkMode = true; document.getElementById('modalTitle').innerHTML = '<i class="fa-solid fa-bookmark" style="color:#16a34a; margin-right:8px;"></i>Bookmark Baru';
@@ -1256,7 +1200,7 @@ final html dengan music player
     async function loadBookmarks() {
         const container = document.getElementById('bookmarkContainer'); let { data: bookmarks } = await supabaseClient.from('bookmark').select('*').order('id', { ascending: false });
         if (bookmarks) {
-            currentBookmarksList = bookmarks; 
+            currentBookmarksList = bookmarks; // Simpan ke variabel global html
             container.innerHTML = bookmarks.map(bk => `<div class="item-row" style="cursor: default;"><div class="item-text-wrapper"><div class="item-title" title="${escapeHTML(bk.nama)}">${escapeHTML(bk.nama)}</div><div class="item-meta"><a href="${bk.url}" target="_blank" class="item-link">${bk.url}</a></div></div></div>`).join('');
             document.getElementById('bookmarkFooter').innerText = `${bookmarks.length} Tautan`;
         }
@@ -1266,7 +1210,7 @@ final html dengan music player
         const container = document.getElementById('driveContainer'); const { data: files } = await supabaseClient.storage.from('documents').list('uploads');
         if (files) {
             const sortedFiles = files.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-            currentDriveList = sortedFiles; 
+            currentDriveList = sortedFiles; // Simpan ke variabel global html
             container.innerHTML = sortedFiles.map(file => {
                 let cleanName = file.name.substring(file.name.indexOf('_') + 1); let publicUrl = supabaseClient.storage.from('documents').getPublicUrl(`uploads/${file.name}`).data.publicUrl;
                 return `<div class="item-row" style="cursor: default;"><div class="item-text-wrapper"><div class="item-title" title="${escapeHTML(cleanName)}">${escapeHTML(cleanName)}</div><div class="item-meta"><a href="${publicUrl}" target="_blank" class="item-link">Buka File</a></div></div><div style="cursor: pointer; color: var(--ios-blue); font-size: 18px; padding: 4px 8px; transition: opacity 0.2s; flex-shrink: 0;" onclick="downloadDriveFile('${file.name}', '${cleanName}')" onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'" title="Unduh File"><i class="fa-solid fa-arrow-down"></i></div></div>`;
@@ -1341,6 +1285,9 @@ final html dengan music player
         }
     }
 
+    // =======================================================
+    // --- INTEGRASI FUNGSI EMAIL ---
+    // =======================================================
     let emailsData = [];
     let activeEmail = null; 
 
@@ -1436,121 +1383,7 @@ final html dengan music player
       }
     }
 
-    // =======================================================
-    // --- SCRIPT WIDGET MUSIC LOKAL (DARI HTML 2) ---
-    // =======================================================
-    const w2_defaultCover = "https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=150&h=150&fit=crop";
-    const w2_songs = [
-      { folder: "Pop Hits 2026", title: "Electronic Vibe", artist: "T.C. Soundtrack", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3", cover: w2_defaultCover },
-      { folder: "Pop Hits 2026", title: "Midnight Drive", artist: "T.C. Soundtrack", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3", cover: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=150&h=150&fit=crop" },
-      { folder: "Chill Out", title: "Urban Sunset", artist: "T.C. Soundtrack", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3", cover: "https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=150&h=150&fit=crop" },
-      { folder: "Chill Out", title: "Ocean Breeze", artist: "T.C. Soundtrack", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3", cover: "https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=150&h=150&fit=crop" }
-    ];
-
-    let w2_currentSongIndex = 0; let w2_isPlaying = false; let w2_playMode = 'order'; 
-
-    setTimeout(() => {
-      const audio = document.getElementById('w2-audio-player');
-      const headerTitle = document.getElementById('w2-header-title');
-      const headerArtist = document.getElementById('w2-header-artist');
-      const headerCover = document.getElementById('w2-header-cover');
-      const playlistEl = document.getElementById('w2-playlist');
-      const btnPlay = document.getElementById('w2-btn-play');
-      const btnPrev = document.getElementById('w2-btn-prev');
-      const btnNext = document.getElementById('w2-btn-next');
-      const btnMode = document.getElementById('w2-btn-mode');
-      const iconPlay = document.getElementById('w2-icon-play');
-      const iconPause = document.getElementById('w2-icon-pause');
-      const iconOrder = document.querySelector('.w2-icon-order');
-      const iconRepeat = document.querySelector('.w2-icon-repeat');
-      const iconShuffle = document.querySelector('.w2-icon-shuffle');
-      const progressFill = document.getElementById('w2-progress-fill');
-      const progressContainer = document.getElementById('w2-progress-container');
-      const btnUpload = document.getElementById('w2-btn-upload');
-      const fileInput = document.getElementById('w2-file-input');
-      const statText = document.getElementById('w2-stat-text');
-
-      function updateStats(foldersObj) {
-        statText.innerText = `${w2_songs.length} Music, ${Object.keys(foldersObj).length} Albums`;
-      }
-
-      function renderPlaylist() {
-        playlistEl.innerHTML = '';
-        const folders = {};
-        w2_songs.forEach((song, index) => {
-          if (!folders[song.folder]) folders[song.folder] = [];
-          folders[song.folder].push({ ...song, originalIndex: index }); 
-        });
-        updateStats(folders);
-
-        for (const [folderName, folderSongs] of Object.entries(folders)) {
-          const header = document.createElement('div');
-          header.className = 'w2-folder-header';
-          header.innerHTML = `<div class="w2-folder-title-wrap"><svg class="w2-folder-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg><span>${folderName}</span></div><svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>`;
-          const content = document.createElement('div');
-          content.className = 'w2-folder-content';
-
-          header.addEventListener('click', () => { header.classList.toggle('collapsed'); content.classList.toggle('collapsed'); });
-
-          folderSongs.forEach((song) => {
-            const item = document.createElement('div');
-            item.className = `w2-playlist-item ${song.originalIndex === w2_currentSongIndex ? 'active' : ''}`;
-            item.innerHTML = `<div class="w2-pl-left"><div class="w2-pl-indicator"></div><div class="w2-pl-text"><div class="w2-pl-title">${song.title}</div><div class="w2-pl-artist">${song.artist}</div></div></div>`;
-            item.addEventListener('click', () => { w2_currentSongIndex = song.originalIndex; loadSong(w2_songs[w2_currentSongIndex]); playSong(); });
-            content.appendChild(item);
-          });
-          playlistEl.appendChild(header); playlistEl.appendChild(content);
-        }
-      }
-
-      function loadSong(song) { headerTitle.innerText = song.title; headerArtist.innerText = song.artist; headerCover.src = song.cover; audio.src = song.src; renderPlaylist(); }
-      function playSong() { w2_isPlaying = true; audio.play(); iconPlay.style.display = 'none'; iconPause.style.display = 'block'; }
-      function pauseSong() { w2_isPlaying = false; audio.pause(); iconPlay.style.display = 'block'; iconPause.style.display = 'none'; }
-
-      function nextSong(isAuto = false) {
-        if (isAuto && w2_playMode === 'repeat') { audio.currentTime = 0; playSong(); return; }
-        if (w2_playMode === 'shuffle') {
-          let randomIndex = w2_currentSongIndex;
-          if (w2_songs.length > 1) { while (randomIndex === w2_currentSongIndex) { randomIndex = Math.floor(Math.random() * w2_songs.length); } }
-          w2_currentSongIndex = randomIndex;
-        } else { w2_currentSongIndex = (w2_currentSongIndex + 1) % w2_songs.length; }
-        loadSong(w2_songs[w2_currentSongIndex]); playSong();
-      }
-
-      function prevSong() { w2_currentSongIndex = (w2_currentSongIndex - 1 + w2_songs.length) % w2_songs.length; loadSong(w2_songs[w2_currentSongIndex]); playSong(); }
-
-      btnPlay.addEventListener('click', () => w2_isPlaying ? pauseSong() : playSong());
-      btnNext.addEventListener('click', () => nextSong(false));
-      btnPrev.addEventListener('click', prevSong);
-      audio.addEventListener('ended', () => nextSong(true));
-
-      btnMode.addEventListener('click', () => {
-        iconOrder.classList.remove('active'); iconRepeat.classList.remove('active'); iconShuffle.classList.remove('active');
-        btnMode.classList.remove('mode-order', 'mode-repeat', 'mode-shuffle');
-        if (w2_playMode === 'order') { w2_playMode = 'repeat'; iconRepeat.classList.add('active'); btnMode.classList.add('mode-repeat'); } 
-        else if (w2_playMode === 'repeat') { w2_playMode = 'shuffle'; iconShuffle.classList.add('active'); btnMode.classList.add('mode-shuffle'); } 
-        else { w2_playMode = 'order'; iconOrder.classList.add('active'); btnMode.classList.add('mode-order'); }
-      });
-
-      audio.addEventListener('timeupdate', () => { if (audio.duration) progressFill.style.width = `${(audio.currentTime / audio.duration) * 100}%`; });
-      progressContainer.addEventListener('click', (e) => { if (audio.duration) audio.currentTime = (e.offsetX / progressContainer.clientWidth) * audio.duration; });
-
-      btnUpload.addEventListener('click', () => fileInput.click());
-      fileInput.addEventListener('change', (e) => {
-        const files = e.target.files;
-        if (files.length > 0) {
-          for (let file of files) {
-            w2_songs.push({ folder: "File Lokal", title: file.name.replace(/\.[^/.]+$/, ""), artist: "Local Device", src: URL.createObjectURL(file), cover: "https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?w=150&h=150&fit=crop" });
-          }
-          renderPlaylist();
-          setTimeout(() => { playlistEl.scrollTo({ top: playlistEl.scrollHeight, behavior: 'smooth' }); }, 100);
-          fileInput.value = ""; 
-        }
-      });
-
-      renderPlaylist(); loadSong(w2_songs[w2_currentSongIndex]);
-    }, 500);
-
+    // Pasang loadEmails bersamaan saat DOM dimuat agar sinkron dengan yang lain
     window.addEventListener('DOMContentLoaded', loadEmails);
 
 </script>
