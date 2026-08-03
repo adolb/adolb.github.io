@@ -110,19 +110,33 @@
     }
 
     /* JARAK SAAT LANDSCAPE / LAYAR BESAR */
-    @media (min-width: 769px) {
-        .main-welcome-title { 
-            margin-top: 80px; 
-            font-size: 38px;
-            margin-bottom: 32px;
-        }
+@media (min-width: 769px) {
+    .main-welcome-title { 
+        margin-top: 40px; 
+        font-size: 38px;
+        margin-bottom: 24px;
     }
+    
+    .dashboard-grid {
+        grid-template-columns: repeat(4, 1fr); /* Ubah menjadi 4 widget mendatar */
+        max-width: 1400px;                      /* Diperluas agar 4 kolom muat dengan proporsional */
+        padding: 0 80px;                       /* Menjorok ke dalam lebih jauh (efek inset / zoom out) */
+        gap: 16px;                             /* Memperkecil jarak antar widget agar presisi */
+    }
+}
 
-    @media (max-width: 768px) {
-        .dashboard-grid { grid-template-columns: 1fr; padding: 0 16px; }
-        body { padding: calc(24px + env(safe-area-inset-top)) 12px 100px 12px; }
-        .main-welcome-title { font-size: 28px; margin-bottom: 16px; margin-top: 0; }
+/* KHUSUS PERANGKAT HP MODE LANDSCAPE */
+@media (max-height: 500px) and (orientation: landscape) {
+    .dashboard-grid {
+        grid-template-columns: repeat(4, 1fr);
+        padding: 0 50px;
     }
+    .main-welcome-title {
+        font-size: 24px;
+        margin-top: 10px;
+        margin-bottom: 16px;
+    }
+}
 
     /* --- KOMPONEN KARTU ICLOUD --- */
     .icloud-card {
