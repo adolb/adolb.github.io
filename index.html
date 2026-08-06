@@ -1093,55 +1093,168 @@
         </div>
     </div>
     
-    <!-- ========================================== -->
-    <!-- 10. WIDGET STATUS MEMORI SUPABASE -->
-    <!-- ========================================== -->
-    <div class="icloud-card">
-      <div class="card-header" style="padding-bottom: 6px; margin-bottom: 0;">
-        <div class="header-left">
-          <div class="app-icon" style="background: rgba(10, 132, 255, 0.15); color: #0a84ff;"><i class="fa-solid fa-database"></i></div>
-          <div class="app-info"><h2>Status Memori Supabase</h2><span>Real-Time Data Sync</span></div>
-        </div>
+<!-- Pastikan library Supabase dimuat (Cukup 1 kali saja di halaman Anda) -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<!-- ========================================== -->
+<!-- WIDGET STATUS MEMORI SUPABASE (DESAIN) -->
+<!-- ========================================== -->
+<div class="icloud-card">
+  <div class="card-header" style="padding-bottom: 6px; margin-bottom: 0;">
+    <div class="header-left">
+      <div class="app-icon" style="background: rgba(10, 132, 255, 0.15); color: #0a84ff;"><i class="fa-solid fa-database"></i></div>
+      <div class="app-info"><h2>Status Memori Supabase</h2><span>Real-Time Data Sync</span></div>
+    </div>
+  </div>
+
+  <div class="card-body" style="padding-top: 4px; padding-bottom: 12px; display: flex; flex-direction: column; gap: 8px;">
+    
+    <!-- Bagian 1: STORAGE -->
+    <div style="background: var(--box-bg); border-radius: 12px; padding: 10px; display: flex; align-items: center; gap: 10px;">
+      <div style="position: relative; width: 44px; height: 44px; min-width: 44px; flex-shrink: 0;">
+        <svg viewBox="0 0 100 100" style="width: 44px !important; height: 44px !important; display: block; transform: rotate(-90deg);">
+          <circle cx="50" cy="50" r="41" fill="none" stroke-width="9" stroke="var(--border-color)"></circle>
+          <circle id="storage-circle" cx="50" cy="50" r="41" fill="none" stroke-width="9" stroke-linecap="round" stroke="#34c759" stroke-dasharray="257.6" stroke-dashoffset="257.6" style="transition: stroke-dashoffset 0.8s cubic-bezier(0.4, 0, 0.2, 1);"></circle>
+        </svg>
+        <div id="storage-pct" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; font-size: 10px; font-weight: 700; color: var(--text-primary);">0%</div>
       </div>
-
-      <div class="card-body" style="padding-top: 4px; padding-bottom: 12px; display: flex; flex-direction: column; gap: 8px;">
-        <div style="background: var(--box-bg); border-radius: 12px; padding: 10px; display: flex; align-items: center; gap: 10px;">
-          <div style="position: relative; width: 44px; height: 44px; min-width: 44px; flex-shrink: 0;">
-            <svg viewBox="0 0 100 100" style="width: 44px !important; height: 44px !important; display: block; transform: rotate(-90deg);">
-              <circle cx="50" cy="50" r="41" fill="none" stroke-width="9" stroke="var(--border-color)"></circle>
-              <circle id="storage-circle" cx="50" cy="50" r="41" fill="none" stroke-width="9" stroke-linecap="round" stroke="#34c759" stroke-dasharray="257.6" stroke-dashoffset="257.6" style="transition: stroke-dashoffset 0.8s cubic-bezier(0.4, 0, 0.2, 1);"></circle>
-            </svg>
-            <div id="storage-pct" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; font-size: 10px; font-weight: 700; color: var(--text-primary);">0%</div>
-          </div>
-          <div style="flex-grow: 1; min-width: 0;">
-            <div style="font-size: 11px; font-weight: 600; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Storage (uploads)</div>
-            <div style="font-size: 10px; color: var(--text-secondary); display: flex; justify-content: space-between;"><span>Terpakai:</span> <span id="storage-used" style="color: var(--text-primary); font-weight: 500;">...</span></div>
-            <div style="font-size: 10px; color: var(--text-secondary); display: flex; justify-content: space-between;"><span>Sisa:</span> <span id="storage-free" style="color: var(--text-primary); font-weight: 500;">...</span></div>
-            <div style="font-size: 10px; color: var(--text-secondary); display: flex; justify-content: space-between;"><span>Total:</span> <span style="color: var(--text-primary); font-weight: 500;">1,00 GB</span></div>
-          </div>
-        </div>
-
-        <div style="background: var(--box-bg); border-radius: 12px; padding: 10px; display: flex; align-items: center; gap: 10px;">
-          <div style="position: relative; width: 44px; height: 44px; min-width: 44px; flex-shrink: 0;">
-            <svg viewBox="0 0 100 100" style="width: 44px !important; height: 44px !important; display: block; transform: rotate(-90deg);">
-              <circle cx="50" cy="50" r="41" fill="none" stroke-width="9" stroke="var(--border-color)"></circle>
-              <circle id="db-circle" cx="50" cy="50" r="41" fill="none" stroke-width="9" stroke-linecap="round" stroke="#007aff" stroke-dasharray="257.6" stroke-dashoffset="257.6" style="transition: stroke-dashoffset 0.8s cubic-bezier(0.4, 0, 0.2, 1);"></circle>
-            </svg>
-            <div id="db-pct" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; font-size: 10px; font-weight: 700; color: var(--text-primary);">0%</div>
-          </div>
-          <div style="flex-grow: 1; min-width: 0;">
-            <div style="font-size: 11px; font-weight: 600; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Database Tables</div>
-            <div style="font-size: 10px; color: var(--text-secondary); display: flex; justify-content: space-between;"><span>Terpakai:</span> <span id="db-size" style="color: var(--text-primary); font-weight: 500;">...</span></div>
-            <div style="font-size: 10px; color: var(--text-secondary); display: flex; justify-content: space-between;"><span>Sisa:</span> <span id="db-free" style="color: var(--text-primary); font-weight: 500;">...</span></div>
-            <div style="font-size: 10px; color: var(--text-secondary); display: flex; justify-content: space-between;"><span>Total:</span> <span style="color: var(--text-primary); font-weight: 500;">2,00 GB</span></div>
-          </div>
-        </div>
-
-        <div style="background: var(--box-bg); border-radius: 10px; padding: 8px 10px; font-size: 10px; color: var(--text-secondary); line-height: 1.3;" id="db-details">
-          Memuat rincian tabel...
-        </div>
+      <div style="flex-grow: 1; min-width: 0;">
+        <div style="font-size: 11px; font-weight: 600; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Storage (uploads)</div>
+        <div style="font-size: 10px; color: var(--text-secondary); display: flex; justify-content: space-between;"><span>Terpakai:</span> <span id="storage-used" style="color: var(--text-primary); font-weight: 500;">...</span></div>
+        <div style="font-size: 10px; color: var(--text-secondary); display: flex; justify-content: space-between;"><span>Sisa:</span> <span id="storage-free" style="color: var(--text-primary); font-weight: 500;">...</span></div>
+        <div style="font-size: 10px; color: var(--text-secondary); display: flex; justify-content: space-between;"><span>Total:</span> <span style="color: var(--text-primary); font-weight: 500;">1,00 GB</span></div>
       </div>
     </div>
+
+    <!-- Bagian 2: DATABASE -->
+    <div style="background: var(--box-bg); border-radius: 12px; padding: 10px; display: flex; align-items: center; gap: 10px;">
+      <div style="position: relative; width: 44px; height: 44px; min-width: 44px; flex-shrink: 0;">
+        <svg viewBox="0 0 100 100" style="width: 44px !important; height: 44px !important; display: block; transform: rotate(-90deg);">
+          <circle cx="50" cy="50" r="41" fill="none" stroke-width="9" stroke="var(--border-color)"></circle>
+          <circle id="db-circle" cx="50" cy="50" r="41" fill="none" stroke-width="9" stroke-linecap="round" stroke="#007aff" stroke-dasharray="257.6" stroke-dashoffset="257.6" style="transition: stroke-dashoffset 0.8s cubic-bezier(0.4, 0, 0.2, 1);"></circle>
+        </svg>
+        <div id="db-pct" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; font-size: 10px; font-weight: 700; color: var(--text-primary);">0%</div>
+      </div>
+      <div style="flex-grow: 1; min-width: 0;">
+        <div style="font-size: 11px; font-weight: 600; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Database Tables</div>
+        <div style="font-size: 10px; color: var(--text-secondary); display: flex; justify-content: space-between;"><span>Terpakai:</span> <span id="db-size" style="color: var(--text-primary); font-weight: 500;">...</span></div>
+        <div style="font-size: 10px; color: var(--text-secondary); display: flex; justify-content: space-between;"><span>Sisa:</span> <span id="db-free" style="color: var(--text-primary); font-weight: 500;">...</span></div>
+        <div style="font-size: 10px; color: var(--text-secondary); display: flex; justify-content: space-between;"><span>Total:</span> <span style="color: var(--text-primary); font-weight: 500;">2,00 GB</span></div>
+      </div>
+    </div>
+
+    <!-- Bagian 3: RINCIAN DETAILS -->
+    <div style="background: var(--box-bg); border-radius: 10px; padding: 8px 10px; font-size: 10px; color: var(--text-secondary); line-height: 1.3;" id="db-details">
+      Memuat rincian tabel...
+    </div>
+    
+  </div>
+</div>
+
+<!-- ========================================== -->
+<!-- SCRIPT PENGISI DATA (ISOLASI AMAN) -->
+<!-- ========================================== -->
+<script>
+  window.addEventListener('load', async function() {
+    // 1. Cek ketersediaan library Supabase
+    if (typeof supabase === 'undefined') {
+      console.error("Widget Memori: Library Supabase tidak ditemukan di halaman ini.");
+      document.getElementById('db-details').innerText = "Gagal memuat library Supabase.";
+      return;
+    }
+
+    // 2. Konfigurasi Data (Variabel diisolasi dalam fungsi ini saja)
+    const WIDGET_URL = "https://awlxjzfadktcthbumxle.supabase.co";
+    const WIDGET_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF3bHhqemZhZGt0Y3RoYnVteGxlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM3ODU3NzgsImV4cCI6MjA5OTM2MTc3OH0.ktRLTXfsYmzb5RH8qKci0FgENkqqVG9atz5sHls9RXI"; 
+    const BUCKET_NAME = "documents";
+    const STORAGE_LIMIT_MB = 1024; // 1 GB
+    const DB_LIMIT_MB = 2048;      // 2 GB
+    const CIRCUMFERENCE = 2 * Math.PI * 41; // Lingkar cincin (257.6)
+
+    // 3. Buat Client Supabase Khusus Widget (Tidak menimpa client login)
+    const widgetClient = supabase.createClient(WIDGET_URL, WIDGET_KEY);
+
+    // Fungsi format ukuran memori
+    function formatMemory(mb) {
+      if (mb < 1024) {
+        return `${mb.toFixed(2).replace('.', ',')} MB`;
+      } else {
+        return `${(mb / 1024).toFixed(2).replace('.', ',')} GB`;
+      }
+    }
+
+    // --- A. PROSES DATA STORAGE ---
+    try {
+      const { data: files, error } = await widgetClient.storage
+        .from(BUCKET_NAME)
+        .list('uploads', { limit: 1000 });
+
+      if (!error) {
+        let totalBytes = 0;
+        if (files && Array.isArray(files)) {
+          files.forEach(file => {
+            if (file.metadata && file.metadata.size) totalBytes += file.metadata.size;
+          });
+        }
+
+        const usedMB = totalBytes / (1024 * 1024);
+        const remainingMB = Math.max(STORAGE_LIMIT_MB - usedMB, 0);
+        const percentage = Math.min((usedMB / STORAGE_LIMIT_MB) * 100, 100);
+
+        // Update teks di HTML
+        document.getElementById('storage-used').innerText = formatMemory(usedMB);
+        document.getElementById('storage-free').innerText = formatMemory(remainingMB);
+        document.getElementById('storage-pct').innerText = `${percentage.toFixed(0)}%`;
+
+        // Animasi Cincin Storage
+        const storageOffset = CIRCUMFERENCE - (percentage / 100) * CIRCUMFERENCE;
+        document.getElementById('storage-circle').style.strokeDashoffset = storageOffset;
+      }
+    } catch (err) {
+      console.error("Widget Storage error:", err.message);
+      document.getElementById('storage-used').innerText = "Gagal memuat";
+    }
+
+    // --- B. PROSES DATA DATABASE ---
+    try {
+      // Menarik data dari semua tabel secara bersamaan
+      const [bookmarkRes, catatanRes, chatRes, emailsRes, pengingatRes] = await Promise.all([
+        widgetClient.from('bookmark').select('*', { count: 'exact', head: true }),
+        widgetClient.from('catatan').select('*', { count: 'exact', head: true }),
+        widgetClient.from('chat_messages').select('*', { count: 'exact', head: true }),
+        widgetClient.from('emails').select('*', { count: 'exact', head: true }),
+        widgetClient.from('pengingat').select('*', { count: 'exact', head: true })
+      ]);
+
+      const totalRows = (bookmarkRes.count || 0) + (catatanRes.count || 0) + 
+                        (chatRes.count || 0) + (emailsRes.count || 0) + (pengingatRes.count || 0);
+
+      // Kalkulasi ukuran (Asumsi 2KB per baris)
+      const estMB = (totalRows * 2048) / (1024 * 1024);
+      const dbRemainingMB = Math.max(DB_LIMIT_MB - estMB, 0);
+      const dbPercentage = Math.min((estMB / DB_LIMIT_MB) * 100, 100);
+
+      // Update teks di HTML
+      document.getElementById('db-size').innerText = formatMemory(estMB);
+      document.getElementById('db-free').innerText = formatMemory(dbRemainingMB);
+      document.getElementById('db-pct').innerText = `${dbPercentage.toFixed(0)}%`;
+
+      // Animasi Cincin Database
+      const dbOffset = CIRCUMFERENCE - (dbPercentage / 100) * CIRCUMFERENCE;
+      document.getElementById('db-circle').style.strokeDashoffset = dbOffset;
+
+      // Update rincian tabel
+      document.getElementById('db-details').innerHTML = 
+        `Total Baris: <b style="color: var(--text-primary);">${totalRows}</b><br>Rincian: bookmark (${bookmarkRes.count || 0}), catatan (${catatanRes.count || 0}), chat_messages (${chatRes.count || 0}), emails (${emailsRes.count || 0}), pengingat (${pengingatRes.count || 0})`;
+
+    } catch (err) {
+      console.error("Widget Database error:", err.message);
+      document.getElementById('db-size').innerText = "Gagal";
+      document.getElementById('db-details').innerText = "Gagal memuat rincian tabel.";
+    }
+  });
+</script>
+
     
     <!-- =====================================
          7. WIDGET OTA CALCULATOR 
