@@ -69,12 +69,6 @@
     }
 
     body {
-    background-image: var(--bg-image);
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-attachment: scroll;
-
     min-height: 100vh;
     padding: 0; 
     margin: 0;
@@ -84,11 +78,25 @@
     padding-top: env(safe-area-inset-top);
 }
 
-/* Hapus 'position: fixed' dari body.locked agar layar bisa di-scroll */
-body.locked {
+/* LAYER GAMBAR FIXED KHUSUS SAFARI IPHONE */
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
     height: 100vh;
-    overflow-y: scroll; /* Kunci viewport iPhone di sini */
+    background-image: var(--bg-image);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    z-index: -1; /* Posisikan di paling belakang */
 }
+
+body.locked {
+    overflow-y: auto;
+}
+
  
   
 
