@@ -574,6 +574,295 @@ body.locked {
         </div>
         <div class="card-footer" id="driveFooter">0 Berkas</div>
     </div>
+  <!-- =====================================
+     WIDGET GALERI MEDIA SUPABASE (GRID 3 KOLOM)
+     ===================================== -->
+<div class="icloud-card" style="display: flex; flex-direction: column; height: 380px; position: relative; overflow: hidden;">
+    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background: #fff; border-bottom: 1px solid #eee;">
+        <div class="header-left" style="display: flex; gap: 12px; align-items: center;">
+            <!-- Ikon Media -->
+            <div class="app-icon" style="background: rgba(139, 92, 246, 1); color: #fff; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 8px;">
+                <i class="fa-solid fa-photo-film"></i>
+            </div>
+            <div class="app-info">
+                <h2 style="font-weight: 600; margin: 0; font-size: 16px;">Galeri Media</h2>
+                <span style="font-size: 12px; color: #666;">Semua iCloud & Supabase</span>
+            </div>
+        </div>
+        <!-- Tombol Reload -->
+        <div class="header-right" style="color: var(--text-meta, #666); cursor: pointer; font-size: 16px;" onclick="fetchMediaFromStorage()" title="Muat Ulang">
+            <i class="fa-solid fa-rotate-right"></i>
+        </div>
+    </div>
+    
+    <div class="card-body" style="padding: 12px 16px; display: flex; flex-direction: column; overflow: hidden; flex: 1;">
+        <!-- Daftar Media (Tampilan Grid 3 Kolom - Jarak Tetap 12px) -->
+        <div class="list-container" id="galeri-media-list" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; align-content: start; overflow-y: auto; flex: 1; padding: 2px 2px 10px 2px;">
+            <div class="item-meta" style="text-align: center; padding: 20px 0; grid-column: 1 / -1;">Memuat galeri media...</div>
+        </div>
+    </div>
+    
+    <div class="card-footer" style="display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; border-top: 1px solid #eee; background: #fff;">
+        <div id="galeri-stat-text" style="font-size: 11px; color: var(--text-meta, #666); font-weight: 500;">0 Foto · 0 Video</div>
+        <div style="color: var(--text-meta, #666); font-size: 14px;">
+            <i class="fa-solid fa-cloud"></i>
+        </div>
+    </div>
+</div>
+
+<!-- =====================================
+     OVERLAY PENAMPIL MEDIA FULLSCREEN
+     ===================================== -->
+<div id="fullscreen-viewer" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.95); z-index: 9999; flex-direction: column;">
+    
+    <!-- Topbar Fullscreen -->
+    <div style="display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; color: white; background: linear-gradient(rgba(0,0,0,0.7), transparent); position: absolute; top: 0; width: 100%; box-sizing: border-box; z-index: 10000;">
+        <div onclick="closeViewer()" style="cursor: pointer; font-size: 20px;">
+            <i class="fa-solid fa-arrow-left"></i>
+        </div>
+        <div style="display: flex; gap: 24px; font-size: 18px;">
+            <div onclick="pinMedia()" style="cursor: pointer;" title="Sematkan ke Atas"><i class="fa-solid fa-thumbtack"></i></div>
+            <div onclick="downloadMedia()" style="cursor: pointer;" title="Unduh"><i class="fa-solid fa-download"></i></div>
+            <div onclick="deleteMedia()" style="cursor: pointer; color: #ef4444;" title="Hapus"><i class="fa-solid fa-trash"></i></div>
+        </div>
+    </div>
+
+    <!-- Container Utama Media -->
+    <div id="fs-media-container" style="flex: 1; display: flex; justify-content: center; align-items: center; overflow: hidden; position: relative;">
+        <video id="fs-video-player" controls style="max-width: 100%; max-height: 100%; object-fit: contain; display: none;"></video>
+        <img id="fs-image-viewer" style="max-width: 100%; max-height: 100%; object-fit: contain; display: none; cursor: grab; transition: transform 0.1s ease-out;" draggable="false" />
+    </div>
+</div>
+
+<script>
+    const mediaListEl = document.getElementById('galeri-media-list');
+    const mediaStatText = document.getElementById('galeri-stat-text');
+    
+    const fullscreenViewer = document.getElementById('fullscreen-viewer');
+    const fsVideo = document.getElementById('fs-video-player');
+    const fsImage = document.getElementById('fs-image-viewer');
+    const fsContainer = document.getElementById('fs-media-container');
+    
+    let mediaPlaylist = [];
+    let currentMediaIndex = -1;
+
+    let scale = 1;
+    let isPanning = false;
+    let startX = 0, startY = 0;
+    let currentX = 0, currentY = 0;
+
+    document.addEventListener("DOMContentLoaded", () => {
+        fetchMediaFromStorage();
+    });
+
+    async function fetchMediaFromStorage() {
+        mediaListEl.innerHTML = '<div class="item-meta" style="text-align: center; padding: 20px 0; grid-column: 1 / -1;">Menyaring media...</div>';
+        try {
+            const { data, error } = await supabaseClient.storage
+                .from('documents')
+                .list('uploads', {
+                    limit: 100,
+                    offset: 0,
+                    sortBy: { column: 'created_at', order: 'desc' }
+                });
+
+            if (error) throw error;
+
+            if (data && data.length > 0) {
+                mediaPlaylist = [];
+                let photoCount = 0;
+                let videoCount = 0;
+
+                data.forEach(file => {
+                    const ext = file.name.split('.').pop().toLowerCase();
+                    const videoFormats = ['mp4', 'webm', 'ogg', 'mov', 'mkv'];
+                    const imageFormats = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'];
+                    
+                    if (videoFormats.includes(ext) || imageFormats.includes(ext)) {
+                        const type = videoFormats.includes(ext) ? 'video' : 'image';
+                        
+                        if (type === 'video') videoCount++;
+                        if (type === 'image') photoCount++;
+
+                        const { data: urlData } = supabaseClient.storage
+                            .from('documents')
+                            .getPublicUrl(`uploads/${file.name}`);
+
+                        let cleanName = file.name.replace(/^\d+_/, "").replace(/\.[^/.]+$/, "").replace(/_/g, " ");
+
+                        mediaPlaylist.push({
+                            name: cleanName,
+                            url: urlData.publicUrl,
+                            format: ext,
+                            type: type,
+                            originalFile: file
+                        });
+                    }
+                });
+
+                mediaStatText.innerText = `${photoCount} Foto · ${videoCount} Video`;
+                renderMediaPlaylist();
+            } else {
+                mediaListEl.innerHTML = '<div class="item-meta" style="text-align: center; padding: 20px 0; grid-column: 1 / -1;">Tidak ada file di storage.</div>';
+            }
+        } catch (err) {
+            console.error("Gagal memuat media:", err.message);
+            mediaListEl.innerHTML = '<div class="item-meta" style="text-align: center; padding: 20px 0; color: #ef4444; grid-column: 1 / -1;">Gagal memuat galeri.</div>';
+        }
+    }
+
+    function renderMediaPlaylist() {
+        mediaListEl.innerHTML = '';
+        if (mediaPlaylist.length === 0) {
+            mediaListEl.innerHTML = '<div class="item-meta" style="text-align: center; padding: 20px 0; grid-column: 1 / -1;">Tidak ada file media ditemukan.</div>';
+            return;
+        }
+        
+        mediaPlaylist.forEach((media, index) => {
+            const item = document.createElement('div');
+            item.style.width = '100%';
+            item.style.height = 'auto'; 
+            item.style.aspectRatio = '1 / 1';
+            item.style.borderRadius = '8px';
+            item.style.overflow = 'hidden';
+            item.style.cursor = 'pointer';
+            item.style.position = 'relative';
+            item.style.display = 'block'; 
+            
+            let mediaContent = '';
+            
+            if (media.type === 'image') {
+                mediaContent = `<img src="${media.url}" alt="${media.name}" style="width: 100%; height: 100%; display: block; object-fit: cover;">`;
+            } else {
+                mediaContent = `
+                    <video src="${media.url}#t=1" preload="metadata" style="width: 100%; height: 100%; display: block; object-fit: cover; background: #222;"></video>
+                    <div style="position: absolute; top: 6px; right: 6px; color: white; font-size: 10px; drop-shadow(0px 1px 2px rgba(0,0,0,0.5));">
+                        <i class="fa-solid fa-video"></i>
+                    </div>
+                `;
+            }
+            
+            item.innerHTML = mediaContent;
+            item.addEventListener('click', () => viewMedia(index));
+            mediaListEl.appendChild(item);
+        });
+    }
+
+    // ==========================================
+    // FUNGSI FULLSCREEN & AKSI MEDIA
+    // ==========================================
+
+    function viewMedia(index) {
+        if (mediaPlaylist.length === 0) return;
+        currentMediaIndex = index;
+        const selected = mediaPlaylist[currentMediaIndex];
+        
+        fullscreenViewer.style.display = 'flex';
+        resetTransform(); 
+
+        if (selected.type === 'video') {
+            fsImage.style.display = 'none';
+            fsVideo.style.display = 'block';
+            fsVideo.src = selected.url;
+            fsVideo.play();
+        } else {
+            fsVideo.pause();
+            fsVideo.style.display = 'none';
+            fsImage.style.display = 'block';
+            fsImage.src = selected.url;
+        }
+    }
+
+    function closeViewer() {
+        fullscreenViewer.style.display = 'none';
+        fsVideo.pause();
+        fsVideo.src = "";
+    }
+
+    function pinMedia() {
+        if (currentMediaIndex > 0) {
+            const selectedMedia = mediaPlaylist.splice(currentMediaIndex, 1)[0];
+            mediaPlaylist.unshift(selectedMedia);
+            currentMediaIndex = 0; 
+            renderMediaPlaylist();
+            alert("Media disematkan ke urutan teratas!");
+        }
+    }
+
+    function downloadMedia() {
+        const selected = mediaPlaylist[currentMediaIndex];
+        const a = document.createElement('a');
+        a.href = selected.url;
+        a.download = selected.name; 
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    }
+
+    function deleteMedia() {
+        const confirmDelete = confirm("Apakah Anda yakin ingin menghapus media ini?");
+        if(confirmDelete) {
+            mediaPlaylist.splice(currentMediaIndex, 1);
+            closeViewer();
+            renderMediaPlaylist();
+        }
+    }
+
+    // ==========================================
+    // LOGIKA ZOOM DAN GESER (PAN) PADA GAMBAR
+    // ==========================================
+
+    function updateTransform() {
+        fsImage.style.transform = `translate(${currentX}px, ${currentY}px) scale(${scale})`;
+    }
+
+    function resetTransform() {
+        scale = 1;
+        currentX = 0;
+        currentY = 0;
+        updateTransform();
+    }
+
+    fsContainer.addEventListener('wheel', (e) => {
+        if (fsImage.style.display !== 'none') {
+            e.preventDefault();
+            const zoomSpeed = 0.1;
+            const delta = e.deltaY > 0 ? -1 : 1;
+            
+            scale += delta * zoomSpeed;
+            scale = Math.max(1, Math.min(scale, 5));
+            
+            if (scale === 1) { currentX = 0; currentY = 0; }
+            updateTransform();
+        }
+    });
+
+    fsContainer.addEventListener('mousedown', (e) => {
+        if (fsImage.style.display !== 'none' && scale > 1) {
+            e.preventDefault();
+            isPanning = true;
+            startX = e.clientX - currentX;
+            startY = e.clientY - currentY;
+            fsImage.style.cursor = 'grabbing';
+            fsImage.style.transition = 'none';
+        }
+    });
+
+    window.addEventListener('mouseup', () => {
+        isPanning = false;
+        fsImage.style.cursor = 'grab';
+        fsImage.style.transition = 'transform 0.1s ease-out';
+    });
+
+    window.addEventListener('mousemove', (e) => {
+        if (!isPanning) return;
+        e.preventDefault();
+        currentX = e.clientX - startX;
+        currentY = e.clientY - startY;
+        updateTransform();
+    });
+</script>
+
       <!-- ========================================== -->
     <!-- 8. WIDGET WHATSAPP ARSIP & MANAGER         -->
     <!-- ========================================== -->
