@@ -73,7 +73,7 @@
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    background-attachment: fixed;
+    background-attachment: scroll;
 
     min-height: 100vh;
     padding: 0; 
@@ -86,7 +86,8 @@
 
 /* Hapus 'position: fixed' dari body.locked agar layar bisa di-scroll */
 body.locked {
-    overflow-y: auto;
+    height: 100vh;
+    overflow-y: scroll; /* Kunci viewport iPhone di sini */
 }
  
   
