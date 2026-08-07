@@ -69,28 +69,27 @@
     }
 
     body {
-    /* UBAH & TAMBAHKAN BARIS INI (Pengaturan Gambar): */
     background-image: var(--bg-image);
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
     background-attachment: fixed;
-        min-height: 100vh;
-        padding: 0; 
-        margin: 0;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        padding-top: env(safe-area-inset-top);
-    }
 
-    body.locked {
-        overflow: hidden;
-        height: 100vh;
-        width: 100vw;
-        position: fixed; 
-        touch-action: none; 
-    }
+    min-height: 100vh;
+    padding: 0; 
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: env(safe-area-inset-top);
+}
+
+/* Hapus 'position: fixed' dari body.locked agar layar bisa di-scroll */
+body.locked {
+    overflow-y: auto;
+}
+ 
+  
 
     .main-welcome-title {
         font-size: 32px;
