@@ -2,21 +2,15 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <!-- Mengubah viewport agar terlihat seperti layar desktop (zoomed out)[span_3](start_span)[span_3](end_span) -->
     <meta name="viewport" content="width=1024, user-scalable=no">
-    
-    <!-- Meta tags untuk iOS Add to Home Screen tanpa bar Safari[span_4](start_span)[span_4](end_span) -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Mac Notes">
     
-    <!-- Opsional: Tambahkan link icon jika Anda ingin icon khusus di Home Screen iPhone -->
-    <!-- <link rel="apple-touch-icon" href="URL_GAMBAR_ICON_ANDA.png"> -->
-
     <title>macOS Dark Mode Notepad</title>
-    <!-- FontAwesome[span_5](start_span)[span_5](end_span) -->
+    <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Interact.js[span_6](start_span)[span_6](end_span) -->
+    <!-- Interact.js -->
     <script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
     
     <style>
@@ -78,6 +72,7 @@
             -webkit-user-select: none;
             position: relative;
             background: #282829;
+            flex-shrink: 0;
         }
 
         .mac-controls {
@@ -104,20 +99,11 @@
             padding: 4px 16px 12px 16px;
             border-bottom: 1px solid #1a1a1a;
             gap: 16px;
+            flex-shrink: 0;
         }
 
-        .nav-icons {
-            display: flex;
-            gap: 12px;
-            color: #8c8c8e;
-            font-size: 14px;
-        }
-
-        .toolbar-title {
-            font-size: 13px;
-            font-weight: 600;
-            color: #ffffff;
-        }
+        .nav-icons { display: flex; gap: 12px; color: #8c8c8e; font-size: 14px; }
+        .toolbar-title { font-size: 13px; font-weight: 600; color: #ffffff; }
 
         .app-header {
             display: flex;
@@ -126,133 +112,100 @@
             padding: 12px 16px;
             background: #282829;
             gap: 12px;
-        }
-
-        .app-info-left {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            flex: 1;
-        }
-
-        .app-icon {
-            width: 32px;
-            height: 32px;
-            background: #ffcc00;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-            color: #000;
             flex-shrink: 0;
         }
 
-        .app-text {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-            flex: 1;
+        .app-info-left { display: flex; align-items: center; gap: 12px; flex: 1; }
+        .app-icon {
+            width: 32px; height: 32px; background: #ffcc00; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center; font-size: 18px; color: #000; flex-shrink: 0;
         }
+
+        .app-text { display: flex; flex-direction: column; gap: 2px; flex: 1; }
 
         .note-title-input {
-            background: #1e1e1e;
-            border: 1px solid #3e3e40;
-            color: #ffffff;
-            font-size: 13px;
-            font-weight: 600;
-            padding: 2px 6px;
-            border-radius: 4px;
-            outline: none;
-            width: 100%;
-            max-width: 200px;
+            background: #1e1e1e; border: 1px solid #3e3e40; color: #ffffff;
+            font-size: 13px; font-weight: 600; padding: 2px 6px; border-radius: 4px; outline: none; width: 100%; max-width: 200px;
         }
         .note-title-input:focus { border-color: #007aff; }
-
-        .app-text p {
-            font-size: 11px;
-            color: #98989d;
-            margin: 0;
-        }
-
-        .btn-outline {
-            background: #3e3e40;
-            border: 1px solid #555557;
-            color: #fff;
-            padding: 4px 12px;
-            border-radius: 5px;
-            font-size: 12px;
-            font-weight: 500;
-            cursor: pointer;
-            white-space: nowrap;
-        }
-        .btn-outline:hover { background: #4a4a4c; }
+        .app-text p { font-size: 11px; color: #98989d; margin: 0; }
 
         .notepad-container {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
+            display: flex; 
+            flex-direction: column; 
             background: #1e1e1e;
-            border-top: 1px solid #1a1a1a;
+            border-top: 1px solid #1a1a1a; 
             border-bottom: 1px solid #1a1a1a;
         }
 
-        .table-header {
-            display: flex;
-            padding: 6px 16px;
-            font-size: 11px;
-            color: #98989d;
-            border-bottom: 1px solid #2c2c2e;
-            background: #282829;
-        }
-
         .notepad-container textarea {
-            flex: 1;
-            width: 100%;
-            background: transparent;
-            border: none;
+            width: 100%; 
+            background: transparent; 
+            border: none; 
             outline: none;
-            color: #e0e0e0;
+            color: #e0e0e0; 
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-            font-size: 13px;
-            line-height: 1.6;
-            padding: 12px 16px;
-            resize: none;
+            font-size: 13px; 
+            line-height: 1.6; 
+            padding: 12px 16px; 
+            resize: none; 
             touch-action: auto;
+            height: 100%;
+            overflow-y: auto;
         }
 
         .window-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 16px;
-            background: #282829;
+            display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background: #282829;
+            flex-shrink: 0;
         }
-
-        .breadcrumb {
-            font-size: 11px;
-            color: #98989d;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .footer-buttons {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-        }
-
+        .breadcrumb { font-size: 11px; color: #98989d; display: flex; align-items: center; gap: 4px; }
         .btn-blue {
-            background: #007aff;
-            border: none;
-            color: #fff;
-            padding: 6px 16px;
-            border-radius: 5px;
-            font-size: 12px;
-            font-weight: 500;
-            cursor: pointer;
-            box-shadow: 0 2px 10px rgba(0,122,255,0.4);
+            background: #007aff; border: none; color: #fff; padding: 6px 16px;
+            border-radius: 5px; font-size: 12px; font-weight: 500; cursor: pointer; box-shadow: 0 2px 10px rgba(0,122,255,0.4);
+        }
+
+        /* KHUSUS PORTRAIT (PONSEL) */
+        @media (orientation: portrait) {
+            body {
+                overflow: hidden;
+            }
+            #desktop {
+                position: absolute;
+                top: 60px;
+                left: 0; right: 0; bottom: 0;
+                display: flex !important;
+                flex-direction: column;
+                gap: 20px;
+                padding: 16px;
+                overflow-y: auto !important;
+                align-items: center;
+            }
+            .global-tools {
+                top: 16px; right: auto; left: 50%;
+                transform: translateX(-50%);
+            }
+            .mac-dark-widget {
+                position: relative !important;
+                transform: none !important;
+                width: 100% !important;
+                max-width: 600px;
+                height: auto !important;
+                min-height: 250px;
+                margin-bottom: 15px;
+                flex-shrink: 0;
+            }
+            /* Memaksa elemen konten isi jendela ikut menyesuaikan tinggi teks secara total */
+            .mac-dark-widget > div[id^="content_"] {
+                height: auto !important;
+                flex: none !important;
+            }
+            .notepad-container {
+                height: auto !important;
+            }
+            .notepad-container textarea {
+                height: auto !important;
+                overflow: hidden !important;
+            }
         }
     </style>
 </head>
@@ -278,6 +231,8 @@
         let notesData = {};
         let highestZIndex = 10;
 
+        const isPortrait = () => window.matchMedia("(orientation: portrait)").matches;
+
         window.addEventListener('DOMContentLoaded', async () => {
             setupInteractJS();
             await fetchNotesFromSupabase();
@@ -289,12 +244,7 @@
                     method: 'GET',
                     headers: getHeaders()
                 });
-
-                if (!response.ok) {
-                    const errData = await response.json();
-                    throw new Error(errData.message || response.statusText);
-                }
-
+                if (!response.ok) throw new Error("Gagal load");
                 const data = await response.json();
 
                 if (!data || data.length === 0) {
@@ -310,23 +260,18 @@
                             y: Number(note.y) || 50,
                             w: Number(note.w) || 580,
                             h: Number(note.h) || 400,
-                            zIndex: Number(note.z_index) || 10,
-                            isOpen: note.is_open ?? true
+                            zIndex: Number(note.z_index) || 10
                         };
                     });
                     renderAllOpenWindows();
                 }
-            } catch (e) {
-                console.error("Fetch Error:", e);
-            }
+            } catch (e) { console.error(e); }
         }
 
         async function syncNoteToSupabase(id) {
             const note = notesData[id];
             if (!note) return;
-
             const saveStatus = document.getElementById(`status_${id}`);
-
             const payload = {
                 id: String(note.id),
                 title: String(note.title || ''),
@@ -336,7 +281,6 @@
                 w: Math.round(Number(note.w) || 580),
                 h: Math.round(Number(note.h) || 400),
                 z_index: Math.round(Number(note.zIndex) || 10),
-                is_open: Boolean(note.isOpen),
                 updated_at: new Date().toISOString()
             };
 
@@ -346,25 +290,10 @@
                     headers: getHeaders(),
                     body: JSON.stringify(payload)
                 });
-
-                if (!response.ok) {
-                    const errData = await response.json();
-                    if (saveStatus) {
-                        saveStatus.innerText = "Error: " + (errData.message || "Gagal Simpan");
-                        saveStatus.style.color = "#ff5f56";
-                    }
-                } else {
-                    if (saveStatus) {
-                        saveStatus.innerText = "Tersimpan di Supabase";
-                        saveStatus.style.color = "#98989d";
-                    }
+                if (response.ok && saveStatus) {
+                    saveStatus.innerText = "Tersimpan";
                 }
-            } catch (e) {
-                if (saveStatus) {
-                    saveStatus.innerText = "Error Koneksi";
-                    saveStatus.style.color = "#ff5f56";
-                }
-            }
+            } catch (e) {}
         }
 
         async function createNewNote(customTitle) {
@@ -377,10 +306,8 @@
                 y: 50 + (Object.keys(notesData).length * 20),
                 w: 580,
                 h: 400,
-                zIndex: ++highestZIndex,
-                isOpen: true
+                zIndex: ++highestZIndex
             };
-
             renderWindow(id);
             await syncNoteToSupabase(id);
         }
@@ -389,13 +316,50 @@
             delete notesData[id];
             const el = document.getElementById(id);
             if (el) el.remove();
-
             try {
-                await fetch(`${SUPABASE_URL}/rest/v1/notes?id=eq.${id}`, {
-                    method: 'DELETE',
-                    headers: getHeaders()
-                });
+                await fetch(`${SUPABASE_URL}/rest/v1/notes?id=eq.${id}`, { method: 'DELETE', headers: getHeaders() });
             } catch(e){}
+        }
+
+        function toggleMinimize(id) {
+            if (isPortrait()) return;
+            const content = document.getElementById(`content_${id}`);
+            const win = document.getElementById(id);
+            if (content.style.display === "none") {
+                content.style.display = "flex";
+                win.style.height = (notesData[id].h || 400) + 'px';
+            } else {
+                content.style.display = "none";
+                win.style.height = "28px";
+            }
+        }
+
+        function toggleMaximize(id) {
+            if (isPortrait()) return;
+            const win = document.getElementById(id);
+            if (!win.dataset.maximized || win.dataset.maximized === "false") {
+                win.dataset.oldW = win.style.width;
+                win.dataset.oldH = win.style.height;
+                win.dataset.oldTransform = win.style.transform;
+                win.style.width = '100vw';
+                win.style.height = '100vh';
+                win.style.transform = 'translate(0px, 0px)';
+                win.dataset.maximized = "true";
+            } else {
+                win.style.width = win.dataset.oldW;
+                win.style.height = win.dataset.oldH;
+                win.style.transform = win.dataset.oldTransform;
+                win.dataset.maximized = "false";
+            }
+        }
+
+        function bringToFront(id) {
+            if (notesData[id] && notesData[id].zIndex !== highestZIndex) {
+                highestZIndex++;
+                notesData[id].zIndex = highestZIndex;
+                const el = document.getElementById(id);
+                if (el) el.style.zIndex = highestZIndex;
+            }
         }
 
         function renderAllOpenWindows() {
@@ -416,17 +380,19 @@
             win.style.transform = `translate(${note.x}px, ${note.y}px)`;
             win.setAttribute('data-x', note.x);
             win.setAttribute('data-y', note.y);
+            
+            win.addEventListener('mousedown', () => bringToFront(note.id));
 
             win.innerHTML = `
                 <div class="title-bar drag-handle">
                     <div class="mac-controls">
-                        <button class="mac-btn close" onclick="deleteNote('${note.id}')"></button>
-                        <button class="mac-btn minimize"></button>
-                        <button class="mac-btn maximize"></button>
+                        <button class="mac-btn close" onclick="deleteNote('${note.id}')" title="Hapus"></button>
+                        <button class="mac-btn minimize" onclick="toggleMinimize('${note.id}')" title="Minimize"></button>
+                        <button class="mac-btn maximize" onclick="toggleMaximize('${note.id}')" title="Maximize"></button>
                     </div>
                 </div>
 
-                <div style="display: flex; flex-direction: column; flex: 1; overflow: hidden;">
+                <div id="content_${note.id}" style="display: flex; flex-direction: column; flex: 1; overflow: hidden; height: 100%;">
                     <div class="toolbar">
                         <div class="nav-icons"><i class="fa-solid fa-chevron-left"></i><i class="fa-solid fa-chevron-right"></i></div>
                         <div class="toolbar-title">Notepad</div>
@@ -437,10 +403,9 @@
                             <div class="app-icon"><i class="fa-solid fa-note-sticky"></i></div>
                             <div class="app-text">
                                 <input type="text" class="note-title-input" id="title_input_${note.id}" value="${note.title}">
-                                <p><span id="status_${note.id}">Tersimpan di Supabase</span></p>
+                                <p><span id="status_${note.id}">Tersimpan</span></p>
                             </div>
                         </div>
-                        <button class="btn-outline" onclick="deleteNote('${note.id}')">Hapus</button>
                     </div>
 
                     <div class="notepad-container">
@@ -449,7 +414,7 @@
 
                     <div class="window-footer">
                         <div class="breadcrumb"><i class="fa-solid fa-laptop"></i> Macintosh HD > Notes</div>
-                        <button class="btn-blue" onclick="deleteNote('${note.id}')">Done</button>
+                        <button class="btn-blue" onclick="deleteNote('${note.id}')">Hapus Note</button>
                     </div>
                 </div>
             `;
@@ -460,8 +425,21 @@
             const titleInput = document.getElementById(`title_input_${note.id}`);
             let timeout = null;
 
+            const adjustHeight = () => {
+                if (isPortrait()) {
+                    textarea.style.height = 'auto';
+                    textarea.style.height = (textarea.scrollHeight + 10) + 'px';
+                } else {
+                    textarea.style.height = '100%';
+                }
+            };
+
+            setTimeout(adjustHeight, 100);
+
             const triggerSave = () => {
                 document.getElementById(`status_${note.id}`).innerText = "Menyimpan...";
+                adjustHeight(); 
+                
                 clearTimeout(timeout);
                 timeout = setTimeout(async () => {
                     notesData[note.id].content = textarea.value;
@@ -479,7 +457,9 @@
                 .draggable({
                     allowFrom: '.drag-handle',
                     listeners: {
+                        start(event) { bringToFront(event.target.id); },
                         move(event) {
+                            if (isPortrait()) return;
                             let target = event.target;
                             let x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx;
                             let y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
@@ -488,6 +468,7 @@
                             target.setAttribute('data-y', y);
                         },
                         end(event) {
+                            if (isPortrait()) return;
                             let id = event.target.id;
                             if (notesData[id]) {
                                 notesData[id].x = parseFloat(event.target.getAttribute('data-x'));
@@ -500,7 +481,9 @@
                 .resizable({
                     edges: { left: true, right: true, bottom: true, top: false },
                     listeners: {
+                        start(event) { bringToFront(event.target.id); },
                         move(event) {
+                            if (isPortrait()) return;
                             let target = event.target;
                             let x = (parseFloat(target.getAttribute('data-x')) || 0) + event.deltaRect.left;
                             let y = (parseFloat(target.getAttribute('data-y')) || 0) + event.deltaRect.top;
@@ -512,6 +495,7 @@
                             Object.assign(target.dataset, { x, y });
                         },
                         end(event) {
+                            if (isPortrait()) return;
                             let id = event.target.id;
                             if (notesData[id]) {
                                 notesData[id].w = parseFloat(event.target.style.width);
