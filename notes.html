@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=1024, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Mac Notes">
@@ -58,8 +58,9 @@
             flex-direction: column;
             overflow: hidden;
             min-width: 320px;
-            min-height: 200px;
+            min-height: 250px;
             color: #ffffff;
+            transition: height 0.2s ease, width 0.2s ease;
         }
 
         .title-bar {
@@ -99,7 +100,6 @@
             padding: 4px 16px 12px 16px;
             border-bottom: 1px solid #1a1a1a;
             gap: 16px;
-            flex-shrink: 0;
         }
 
         .nav-icons { display: flex; gap: 12px; color: #8c8c8e; font-size: 14px; }
@@ -112,7 +112,6 @@
             padding: 12px 16px;
             background: #282829;
             gap: 12px;
-            flex-shrink: 0;
         }
 
         .app-info-left { display: flex; align-items: center; gap: 12px; flex: 1; }
@@ -130,34 +129,27 @@
         .note-title-input:focus { border-color: #007aff; }
         .app-text p { font-size: 11px; color: #98989d; margin: 0; }
 
+        .btn-outline {
+            background: #3e3e40; border: 1px solid #555557; color: #fff; padding: 4px 12px;
+            border-radius: 5px; font-size: 12px; font-weight: 500; cursor: pointer; white-space: nowrap;
+        }
+        .btn-outline:hover { background: #4a4a4c; }
+
         .notepad-container {
-            display: flex; 
-            flex-direction: column; 
-            background: #1e1e1e;
-            border-top: 1px solid #1a1a1a; 
-            border-bottom: 1px solid #1a1a1a;
-            flex-grow: 1;
+            flex: 1; display: flex; flex-direction: column; background: #1e1e1e;
+            border-top: 1px solid #1a1a1a; border-bottom: 1px solid #1a1a1a;
         }
-
+        .table-header {
+            display: flex; padding: 6px 16px; font-size: 11px; color: #98989d;
+            border-bottom: 1px solid #2c2c2e; background: #282829;
+        }
         .notepad-container textarea {
-            width: 100%; 
-            background: transparent; 
-            border: none; 
-            outline: none;
-            color: #e0e0e0; 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-            font-size: 13px; 
-            line-height: 1.6; 
-            padding: 12px 16px; 
-            resize: none; 
-            touch-action: auto;
-            height: 100%;
-            overflow-y: auto;
+            flex: 1; width: 100%; background: transparent; border: none; outline: none;
+            color: #e0e0e0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            font-size: 13px; line-height: 1.6; padding: 12px 16px; resize: none; touch-action: auto;
         }
-
         .window-footer {
             display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background: #282829;
-            flex-shrink: 0;
         }
         .breadcrumb { font-size: 11px; color: #98989d; display: flex; align-items: center; gap: 4px; }
         .btn-blue {
@@ -165,49 +157,47 @@
             border-radius: 5px; font-size: 12px; font-weight: 500; cursor: pointer; box-shadow: 0 2px 10px rgba(0,122,255,0.4);
         }
 
-        /* KHUSUS PORTRAIT (PONSEL) */
+        /* KHUSUS DESKTOP (LANDSCAPE): Paksa tinggi textarea agar full ke jendelanya */
+        @media (orientation: landscape) {
+            .notepad-container textarea {
+                height: 100% !important; 
+            }
+        }
+
+        /* KHUSUS PORTRAIT (TEGAK): Berurutan ke bawah, lebar layar penuh, tinggi memanjang */
         @media (orientation: portrait) {
             body {
-                overflow: hidden;
+                overflow: hidden; /* Mencegah layar body bergeser */
             }
             #desktop {
                 position: absolute;
-                top: 70px;
+                top: 60px; /* Jarak untuk tombol + Add Note */
                 left: 0; right: 0; bottom: 0;
                 display: flex !important;
                 flex-direction: column;
-                gap: 16px;
-                /* Padding bawah diperbesar hingga 150px agar bisa scroll leluasa melewati window terakhir */
-                padding: 0 0 150px 0;
-                overflow-y: auto !important; 
-                align-items: stretch;
+                gap: 20px;
+                padding: 16px;
+                overflow-y: auto !important; /* Memunculkan scroll atas-bawah */
+                align-items: center;
             }
             .global-tools {
                 top: 16px; right: auto; left: 50%;
                 transform: translateX(-50%);
             }
             .mac-dark-widget {
-                position: relative !important;
-                transform: none !important;
-                width: 100% !important; 
-                max-width: 100% !important;
-                min-height: 200px;
-                margin-bottom: 0px;
-                border-radius: 0px;
-                border-left: none;
-                border-right: none;
-            }
-            .mac-dark-widget > div[id^="content_"] {
-                height: 100% !important;
-                display: flex;
-                flex-direction: column;
-            }
-            .notepad-container {
-                flex-grow: 1 !important;
+                position: relative !important; /* Menolak koordinat x, y (absolut) */
+                transform: none !important; /* Menghilangkan efek posisi drag Desktop */
+                width: 100% !important;
+                max-width: 600px;
+                height: auto !important; /* Tinggi disesuaikan dengan isi textarea */
+                min-height: 250px;
+                margin-bottom: 10px;
+                flex-shrink: 0;
             }
             .notepad-container textarea {
-                height: 100% !important; 
-                overflow-y: auto !important;
+                height: auto !important;
+                min-height: 150px;
+                overflow-y: hidden !important; /* Menyembunyikan scrollbar di textarea agar tinggi jendela yang bertambah */
             }
         }
     </style>
@@ -234,6 +224,7 @@
         let notesData = {};
         let highestZIndex = 10;
 
+        // Mendeteksi apakah perangkat sedang ditidurkan (Landscape) atau ditegakkan (Portrait)
         const isPortrait = () => window.matchMedia("(orientation: portrait)").matches;
 
         window.addEventListener('DOMContentLoaded', async () => {
@@ -308,7 +299,7 @@
                 x: 50 + (Object.keys(notesData).length * 20),
                 y: 50 + (Object.keys(notesData).length * 20),
                 w: 580,
-                h: 300,
+                h: 400,
                 zIndex: ++highestZIndex
             };
             renderWindow(id);
@@ -324,37 +315,45 @@
             } catch(e){}
         }
 
+        // --- FUNGSI TOMBOL MAC ---
+        // Tombol Kuning
         function toggleMinimize(id) {
-            if (isPortrait()) return;
+            if (isPortrait()) return; // Nonaktif saat layar HP tegak
             const content = document.getElementById(`content_${id}`);
             const win = document.getElementById(id);
+            
             if (content.style.display === "none") {
                 content.style.display = "flex";
                 win.style.height = (notesData[id].h || 400) + 'px';
             } else {
                 content.style.display = "none";
-                win.style.height = "28px";
+                win.style.height = "28px"; // Menyisakan panel bar
             }
         }
 
+        // Tombol Hijau
         function toggleMaximize(id) {
-            if (isPortrait()) return;
+            if (isPortrait()) return; // Nonaktif saat layar HP tegak
             const win = document.getElementById(id);
             if (!win.dataset.maximized || win.dataset.maximized === "false") {
+                // Simpan posisi lama
                 win.dataset.oldW = win.style.width;
                 win.dataset.oldH = win.style.height;
                 win.dataset.oldTransform = win.style.transform;
+                // Maximize layar penuh
                 win.style.width = '100vw';
                 win.style.height = '100vh';
                 win.style.transform = 'translate(0px, 0px)';
                 win.dataset.maximized = "true";
             } else {
+                // Kembalikan ke posisi awal
                 win.style.width = win.dataset.oldW;
                 win.style.height = win.dataset.oldH;
                 win.style.transform = win.dataset.oldTransform;
                 win.dataset.maximized = "false";
             }
         }
+        // -------------------------
 
         function bringToFront(id) {
             if (notesData[id] && notesData[id].zIndex !== highestZIndex) {
@@ -377,15 +376,16 @@
             const win = document.createElement('div');
             win.id = note.id;
             win.className = 'mac-dark-widget';
-            win.style.width = isPortrait() ? '100%' : (note.w + 'px');
-            win.style.height = (note.h || 300) + 'px';
+            win.style.width = note.w + 'px';
+            win.style.height = note.h + 'px';
             win.style.zIndex = note.zIndex;
-            win.style.transform = isPortrait() ? 'none' : `translate(${note.x}px, ${note.y}px)`;
+            win.style.transform = `translate(${note.x}px, ${note.y}px)`;
             win.setAttribute('data-x', note.x);
             win.setAttribute('data-y', note.y);
             
             win.addEventListener('mousedown', () => bringToFront(note.id));
 
+            // Perhatikan penambahan onclick & id content_ untuk toggle minimize/maximize
             win.innerHTML = `
                 <div class="title-bar drag-handle">
                     <div class="mac-controls">
@@ -395,7 +395,7 @@
                     </div>
                 </div>
 
-                <div id="content_${note.id}" style="display: flex; flex-direction: column; flex: 1; overflow: hidden; height: 100%;">
+                <div id="content_${note.id}" style="display: flex; flex-direction: column; flex: 1; overflow: hidden;">
                     <div class="toolbar">
                         <div class="nav-icons"><i class="fa-solid fa-chevron-left"></i><i class="fa-solid fa-chevron-right"></i></div>
                         <div class="toolbar-title">Notepad</div>
@@ -428,8 +428,19 @@
             const titleInput = document.getElementById(`title_input_${note.id}`);
             let timeout = null;
 
+            // Memperlebar Textarea ke Bawah Otomatis ketika ngetik di HP Portrait
+            const autoResizeTextarea = () => {
+                textarea.style.height = 'auto';
+                textarea.style.height = textarea.scrollHeight + 'px';
+            };
+            
+            // Panggil sekali untuk set tinggi awal saat dirender
+            setTimeout(autoResizeTextarea, 50);
+
             const triggerSave = () => {
                 document.getElementById(`status_${note.id}`).innerText = "Menyimpan...";
+                autoResizeTextarea();
+                
                 clearTimeout(timeout);
                 timeout = setTimeout(async () => {
                     notesData[note.id].content = textarea.value;
@@ -449,7 +460,7 @@
                     listeners: {
                         start(event) { bringToFront(event.target.id); },
                         move(event) {
-                            if (isPortrait()) return;
+                            if (isPortrait()) return; // BLOKIR Drag saat HP Tegak
                             let target = event.target;
                             let x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx;
                             let y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
@@ -469,32 +480,26 @@
                     }
                 })
                 .resizable({
-                    edges: { left: false, right: true, bottom: true, top: false },
+                    edges: { left: true, right: true, bottom: true, top: false },
                     listeners: {
                         start(event) { bringToFront(event.target.id); },
                         move(event) {
+                            if (isPortrait()) return; // BLOKIR Resize saat HP Tegak
                             let target = event.target;
-                            let width = event.rect.width;
-                            let height = event.rect.height;
-
-                            if (isPortrait()) {
-                                target.style.width = '100%';
-                                target.style.height = `${height}px`;
-                            } else {
-                                let x = (parseFloat(target.getAttribute('data-x')) || 0) + event.deltaRect.left;
-                                let y = (parseFloat(target.getAttribute('data-y')) || 0) + event.deltaRect.top;
-                                Object.assign(target.style, {
-                                    width: `${width}px`,
-                                    height: `${height}px`,
-                                    transform: `translate(${x}px, ${y}px)`
-                                });
-                                Object.assign(target.dataset, { x, y });
-                            }
+                            let x = (parseFloat(target.getAttribute('data-x')) || 0) + event.deltaRect.left;
+                            let y = (parseFloat(target.getAttribute('data-y')) || 0) + event.deltaRect.top;
+                            Object.assign(target.style, {
+                                width: `${event.rect.width}px`,
+                                height: `${event.rect.height}px`,
+                                transform: `translate(${x}px, ${y}px)`
+                            });
+                            Object.assign(target.dataset, { x, y });
                         },
                         end(event) {
+                            if (isPortrait()) return;
                             let id = event.target.id;
                             if (notesData[id]) {
-                                notesData[id].w = parseFloat(event.target.style.width) || 580;
+                                notesData[id].w = parseFloat(event.target.style.width);
                                 notesData[id].h = parseFloat(event.target.style.height);
                                 syncNoteToSupabase(id);
                             }
@@ -505,4 +510,3 @@
     </script>
 </body>
 </html>
-
