@@ -58,7 +58,7 @@
             flex-direction: column;
             overflow: hidden;
             min-width: 320px;
-            min-height: 250px;
+            min-height: 200px;
             color: #ffffff;
         }
 
@@ -177,9 +177,10 @@
                 display: flex !important;
                 flex-direction: column;
                 gap: 16px;
-                padding: 0 12px 20px 12px;
-                overflow-y: auto !important; /* Layar utama bisa di-scroll */
-                align-items: center;
+                /* Padding bawah diperbesar hingga 150px agar bisa scroll leluasa melewati window terakhir */
+                padding: 0 0 150px 0;
+                overflow-y: auto !important; 
+                align-items: stretch;
             }
             .global-tools {
                 top: 16px; right: auto; left: 50%;
@@ -188,24 +189,25 @@
             .mac-dark-widget {
                 position: relative !important;
                 transform: none !important;
-                width: 100% !important; /* Jendela full screen ke samping */
+                width: 100% !important; 
                 max-width: 100% !important;
-                height: auto !important; /* Tinggi menyesuaikan teks */
-                min-height: 180px;
+                min-height: 200px;
                 margin-bottom: 0px;
-                flex-shrink: 0;
-                border-radius: 8px;
+                border-radius: 0px;
+                border-left: none;
+                border-right: none;
             }
             .mac-dark-widget > div[id^="content_"] {
-                height: auto !important;
-                flex: none !important;
+                height: 100% !important;
+                display: flex;
+                flex-direction: column;
             }
             .notepad-container {
-                height: auto !important;
+                flex-grow: 1 !important;
             }
             .notepad-container textarea {
-                height: auto !important; /* Tinggi textarea fleksibel mengikuti panjang teks */
-                overflow: hidden !important; /* Menghilangkan scroll dalam jendela/textarea */
+                height: 100% !important; 
+                overflow-y: auto !important;
             }
         }
     </style>
@@ -306,7 +308,7 @@
                 x: 50 + (Object.keys(notesData).length * 20),
                 y: 50 + (Object.keys(notesData).length * 20),
                 w: 580,
-                h: 400,
+                h: 300,
                 zIndex: ++highestZIndex
             };
             renderWindow(id);
@@ -375,10 +377,10 @@
             const win = document.createElement('div');
             win.id = note.id;
             win.className = 'mac-dark-widget';
-            win.style.width = note.w + 'px';
-            win.style.height = note.h + 'px';
+            win.style.width = isPortrait() ? '100%' : (note.w + 'px');
+            win.style.height = (note.h || 300) + 'px';
             win.style.zIndex = note.zIndex;
-            win.style.transform = `translate(${note.x}px, ${note.y}px)`;
+            win.style.transform = isPortrait() ? 'none' : `translate(${note.x}px, ${note.y}px)`;
             win.setAttribute('data-x', note.x);
             win.setAttribute('data-y', note.y);
             
@@ -426,21 +428,8 @@
             const titleInput = document.getElementById(`title_input_${note.id}`);
             let timeout = null;
 
-            const adjustHeight = () => {
-                if (isPortrait()) {
-                    textarea.style.height = 'auto';
-                    textarea.style.height = (textarea.scrollHeight + 5) + 'px';
-                } else {
-                    textarea.style.height = '100%';
-                }
-            };
-
-            setTimeout(adjustHeight, 100);
-
             const triggerSave = () => {
                 document.getElementById(`status_${note.id}`).innerText = "Menyimpan...";
-                adjustHeight(); 
-                
                 clearTimeout(timeout);
                 timeout = setTimeout(async () => {
                     notesData[note.id].content = textarea.value;
@@ -480,26 +469,32 @@
                     }
                 })
                 .resizable({
-                    edges: { left: true, right: true, bottom: true, top: false },
+                    edges: { left: false, right: true, bottom: true, top: false },
                     listeners: {
                         start(event) { bringToFront(event.target.id); },
                         move(event) {
-                            if (isPortrait()) return;
                             let target = event.target;
-                            let x = (parseFloat(target.getAttribute('data-x')) || 0) + event.deltaRect.left;
-                            let y = (parseFloat(target.getAttribute('data-y')) || 0) + event.deltaRect.top;
-                            Object.assign(target.style, {
-                                width: `${event.rect.width}px`,
-                                height: `${event.rect.height}px`,
-                                transform: `translate(${x}px, ${y}px)`
-                            });
-                            Object.assign(target.dataset, { x, y });
+                            let width = event.rect.width;
+                            let height = event.rect.height;
+
+                            if (isPortrait()) {
+                                target.style.width = '100%';
+                                target.style.height = `${height}px`;
+                            } else {
+                                let x = (parseFloat(target.getAttribute('data-x')) || 0) + event.deltaRect.left;
+                                let y = (parseFloat(target.getAttribute('data-y')) || 0) + event.deltaRect.top;
+                                Object.assign(target.style, {
+                                    width: `${width}px`,
+                                    height: `${height}px`,
+                                    transform: `translate(${x}px, ${y}px)`
+                                });
+                                Object.assign(target.dataset, { x, y });
+                            }
                         },
                         end(event) {
-                            if (isPortrait()) return;
                             let id = event.target.id;
                             if (notesData[id]) {
-                                notesData[id].w = parseFloat(event.target.style.width);
+                                notesData[id].w = parseFloat(event.target.style.width) || 580;
                                 notesData[id].h = parseFloat(event.target.style.height);
                                 syncNoteToSupabase(id);
                             }
@@ -510,3 +505,4 @@
     </script>
 </body>
 </html>
+
