@@ -2,11 +2,21 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <!-- Mengubah viewport agar terlihat seperti layar desktop (zoomed out)[span_3](start_span)[span_3](end_span) -->
+    <meta name="viewport" content="width=1024, user-scalable=no">
+    
+    <!-- Meta tags untuk iOS Add to Home Screen tanpa bar Safari[span_4](start_span)[span_4](end_span) -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Mac Notes">
+    
+    <!-- Opsional: Tambahkan link icon jika Anda ingin icon khusus di Home Screen iPhone -->
+    <!-- <link rel="apple-touch-icon" href="URL_GAMBAR_ICON_ANDA.png"> -->
+
     <title>macOS Dark Mode Notepad</title>
-    <!-- FontAwesome -->
+    <!-- FontAwesome[span_5](start_span)[span_5](end_span) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Interact.js -->
+    <!-- Interact.js[span_6](start_span)[span_6](end_span) -->
     <script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
     
     <style>
@@ -255,7 +265,6 @@
     <div id="desktop"></div>
 
     <script>
-        // PASTI KAN DUA VARIABEL INI DIAMBIL DARI SETTINGS > API "adolb's Project"
         const SUPABASE_URL = 'https://awlxjzfadktcthbumxle.supabase.co'; 
         const API_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF3bHhqemZhZGt0Y3RoYnVteGxlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM3ODU3NzgsImV4cCI6MjA5OTM2MTc3OH0.ktRLTXfsYmzb5RH8qKci0FgENkqqVG9atz5sHls9RXI';
 
