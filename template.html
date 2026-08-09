@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=1024, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Mac Notes">
@@ -136,6 +136,7 @@
             background: #1e1e1e;
             border-top: 1px solid #1a1a1a; 
             border-bottom: 1px solid #1a1a1a;
+            flex-grow: 1;
         }
 
         .notepad-container textarea {
@@ -171,13 +172,13 @@
             }
             #desktop {
                 position: absolute;
-                top: 60px;
+                top: 70px;
                 left: 0; right: 0; bottom: 0;
                 display: flex !important;
                 flex-direction: column;
-                gap: 20px;
-                padding: 16px;
-                overflow-y: auto !important;
+                gap: 16px;
+                padding: 0 12px 20px 12px;
+                overflow-y: auto !important; /* Layar utama bisa di-scroll */
                 align-items: center;
             }
             .global-tools {
@@ -187,14 +188,14 @@
             .mac-dark-widget {
                 position: relative !important;
                 transform: none !important;
-                width: 100% !important;
-                max-width: 600px;
-                height: auto !important;
-                min-height: 250px;
-                margin-bottom: 15px;
+                width: 100% !important; /* Jendela full screen ke samping */
+                max-width: 100% !important;
+                height: auto !important; /* Tinggi menyesuaikan teks */
+                min-height: 180px;
+                margin-bottom: 0px;
                 flex-shrink: 0;
+                border-radius: 8px;
             }
-            /* Memaksa elemen konten isi jendela ikut menyesuaikan tinggi teks secara total */
             .mac-dark-widget > div[id^="content_"] {
                 height: auto !important;
                 flex: none !important;
@@ -203,8 +204,8 @@
                 height: auto !important;
             }
             .notepad-container textarea {
-                height: auto !important;
-                overflow: hidden !important;
+                height: auto !important; /* Tinggi textarea fleksibel mengikuti panjang teks */
+                overflow: hidden !important; /* Menghilangkan scroll dalam jendela/textarea */
             }
         }
     </style>
@@ -428,7 +429,7 @@
             const adjustHeight = () => {
                 if (isPortrait()) {
                     textarea.style.height = 'auto';
-                    textarea.style.height = (textarea.scrollHeight + 10) + 'px';
+                    textarea.style.height = (textarea.scrollHeight + 5) + 'px';
                 } else {
                     textarea.style.height = '100%';
                 }
