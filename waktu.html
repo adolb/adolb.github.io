@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Jam Playful & Night Mode</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Variabel warna default (Siang - Biru) */
+        :root {
+            --color-tens: #005bb5;
+            --color-ones: rgba(85, 175, 255, 0.85);
+            --color-dot: #e5e7eb;
+            --shadow-dot: rgba(255, 255, 255, 0.2);
+        }
+        
+        /* Variabel warna saat Night Mode aktif (Malam - Merah Gelap) */
+        body.night-mode {
+            --color-tens: #4a0000; /* Merah tua sangat gelap */
+            --color-ones: rgba(160, 15, 15, 0.85); /* Merah darah transparan */
+            --color-dot: #990000; /* Merah titik dua */
+            --shadow-dot: rgba(160, 15, 15, 0.4);
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            font-family: 'Fredoka', sans-serif;
+            -webkit-user-select: none;
+            user-select: none;
+            /* Agar saat layar diklik tidak muncul highlight biru bawaan HP */
+            -webkit-tap-highlight-color: transparent; 
+        }
+
+        #clock {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 35vw; 
+            line-height: 1;
+            cursor: pointer;
+        }
+
+        @media (orientation: landscape) {
+            #clock {
+                font-size: 75vh;
+            }
+        }
+
+        .group {
+            display: flex;
+            position: relative;
+        }
+
+        .digit {
+            display: inline-block;
+            /* Efek transisi halus saat berganti warna dan angka */
+            transition: color 0.5s ease, transform 0.2s ease-in-out; 
+        }
+
+        .tens {
+            color: var(--color-tens);
+            z-index: 1;
+        }
+
+        .ones {
+            color: var(--color-ones);
+            z-index: 2;
+            /* DIPERBAIKI: Jarak lebih renggang (sebelumnya -0.25em, sekarang -0.10em) */
+            margin-left: -0.10em; 
+        }
+
+        /* Efek miring tidak beraturan dipertahankan */
+        #h-tens { transform: rotate(-6deg) translateY(-2%); }
+        #h-ones { transform: rotate(5deg) translateY(3%); }
+        #m-tens { transform: rotate(-4deg) translateY(1%); }
+        #m-ones { transform: rotate(7deg) translateY(-2%); }
+
+        #colon {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 0.12em;
+            /* DIPERBAIKI: Titik dua tidak terlalu menimpa angka (sebelumnya -0.15em, sekarang -0.04em) */
+            margin: 0 -0.04em; 
+            z-index: 3;
+            position: relative;
+            transform: rotate(-2deg) translateY(2%);
+        }
+
+        .dot {
+            width: 0.15em;
+            height: 0.15em;
+            background-color: var(--color-dot);
+            border-radius: 50%;
+            box-shadow: 0 0 15px var(--shadow-dot);
+            transition: background-color 0.5s ease, box-shadow 0.5s ease;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="clock">
+        <div class="group">
+            <span id="h-tens" class="digit tens">0</span>
+            <span id="h-ones" class="digit ones">0</span>
+        </div>
+        
+        <div id="colon">
+            <div class="dot"></div>
+            <div class="dot"></div>
+        </div>
+        
+        <div class="group">
+            <span id="m-tens" class="digit tens">0</span>
+            <span id="m-ones" class="digit ones">0</span>
+        </div>
+    </div>
+
+    <script>
+        // Fungsi update waktu
+        function updateTime() {
+            const now = new Date();
+            const h = now.getHours().toString().padStart(2, '0');
+            const m = now.getMinutes().toString().padStart(2, '0');
+            
+            document.getElementById('h-tens').innerText = h[0];
+            document.getElementById('h-ones').innerText = h[1];
+            document.getElementById('m-tens').innerText = m[0];
+            document.getElementById('m-ones').innerText = m[1];
+        }
+
+        setInterval(updateTime, 1000);
+        updateTime();
+
+        // Fitur klik untuk ganti tema (Night Mode)
+        document.body.addEventListener('click', function() {
+            document.body.classList.toggle('night-mode');
+        });
+    </script>
+</body>
+</html>
