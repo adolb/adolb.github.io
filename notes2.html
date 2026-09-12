@@ -1,0 +1,1588 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1024, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Mac Notes">
+
+    <title>macOS Dark Mode Notepad</title>
+
+    <!-- FontAwesome -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Interact.js -->
+    <script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
+
+    <!-- Supabase JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display",
+                         "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            touch-action: none;
+        }
+
+        body {
+            background-color: #1a1a2e;
+            background-image: url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .global-tools {
+            position: absolute;
+            top: 12px;
+            right: 16px;
+            z-index: 999999;
+        }
+
+        #desktop {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            overflow: hidden;
+        }
+
+        .mac-dark-widget {
+            position: absolute;
+            width: 580px;
+            height: 400px;
+            background: #282829;
+            border: 1px solid #404040;
+            border-radius: 10px;
+            box-shadow:
+                0 20px 40px rgba(0, 0, 0, 0.4),
+                0 0 0 1px rgba(255,255,255,0.05) inset;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            min-width: 320px;
+            min-height: 250px;
+            color: #ffffff;
+            transition: height 0.2s ease, width 0.2s ease;
+        }
+
+        .title-bar {
+            height: 28px;
+            display: flex;
+            align-items: center;
+            padding: 0 12px;
+            cursor: move;
+            user-select: none;
+            -webkit-user-select: none;
+            position: relative;
+            background: #282829;
+            flex-shrink: 0;
+        }
+
+        .mac-controls {
+            display: flex;
+            gap: 8px;
+            position: absolute;
+            left: 12px;
+        }
+
+        .mac-btn {
+            border: none;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .mac-btn.close { background: #ff5f56; }
+        .mac-btn.minimize { background: #ffbd2e; }
+        .mac-btn.maximize { background: #27c93f; }
+
+        .toolbar {
+            display: flex;
+            align-items: center;
+            padding: 4px 16px 12px 16px;
+            border-bottom: 1px solid #1a1a1a;
+            gap: 16px;
+        }
+
+        .nav-icons {
+            display: flex;
+            gap: 12px;
+            color: #8c8c8e;
+            font-size: 14px;
+        }
+
+        .toolbar-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .app-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            background: #282829;
+            gap: 12px;
+        }
+
+        .app-info-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+        }
+
+        .app-icon {
+            width: 32px;
+            height: 32px;
+            background: #ffcc00;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: #000;
+            flex-shrink: 0;
+        }
+
+        .app-text {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            flex: 1;
+        }
+
+        .note-title-input {
+            background: #1e1e1e;
+            border: 1px solid #3e3e40;
+            color: #ffffff;
+            font-size: 13px;
+            font-weight: 600;
+            padding: 2px 6px;
+            border-radius: 4px;
+            outline: none;
+            width: 100%;
+            max-width: 200px;
+        }
+
+        .note-title-input:focus {
+            border-color: #007aff;
+        }
+
+        .app-text p {
+            font-size: 11px;
+            color: #98989d;
+            margin: 0;
+        }
+
+        .btn-outline {
+            background: #3e3e40;
+            border: 1px solid #555557;
+            color: #fff;
+            padding: 4px 12px;
+            border-radius: 5px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .btn-outline:hover {
+            background: #4a4a4c;
+        }
+
+        .notepad-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #1e1e1e;
+            border-top: 1px solid #1a1a1a;
+            border-bottom: 1px solid #1a1a1a;
+        }
+
+        .table-header {
+            display: flex;
+            padding: 6px 16px;
+            font-size: 11px;
+            color: #98989d;
+            border-bottom: 1px solid #2c2c2e;
+            background: #282829;
+        }
+
+        .notepad-container textarea {
+            flex: 1;
+            width: 100%;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: #e0e0e0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 12px 16px;
+            resize: none;
+            touch-action: auto;
+        }
+
+        .window-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            background: #282829;
+        }
+
+        .breadcrumb {
+            font-size: 11px;
+            color: #98989d;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .btn-blue {
+            background: #007aff;
+            border: none;
+            color: #fff;
+            padding: 6px 16px;
+            border-radius: 5px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0,122,255,0.4);
+        }
+
+        /* Status realtime */
+        #realtimeStatus {
+            position: fixed;
+            left: 12px;
+            bottom: 10px;
+            z-index: 999999;
+            font-size: 10px;
+            color: rgba(255,255,255,0.6);
+            background: rgba(0,0,0,0.35);
+            padding: 4px 8px;
+            border-radius: 5px;
+            pointer-events: none;
+        }
+
+        @media (orientation: landscape) {
+            .notepad-container textarea {
+                height: 100% !important;
+            }
+        }
+
+        @media (orientation: portrait) {
+            body {
+                overflow: hidden;
+            }
+
+            #desktop {
+                position: absolute;
+                top: 60px;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                display: flex !important;
+                flex-direction: column;
+                gap: 20px;
+                padding: 16px;
+                overflow-y: auto !important;
+                align-items: center;
+            }
+
+            .global-tools {
+                top: 16px;
+                right: auto;
+                left: 50%;
+                transform: translateX(-50%);
+            }
+
+            .mac-dark-widget {
+                position: relative !important;
+                transform: none !important;
+                width: 100% !important;
+                max-width: 600px;
+                height: auto !important;
+                min-height: 250px;
+                margin-bottom: 10px;
+                flex-shrink: 0;
+            }
+
+            .notepad-container textarea {
+                height: auto !important;
+                min-height: 150px;
+                overflow-y: hidden !important;
+            }
+
+            #realtimeStatus {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="global-tools">
+        <button class="btn-blue" onclick="createNewNote()">
+            <i class="fa-solid fa-plus"></i> Tambah Note
+        </button>
+    </div>
+
+    <div id="desktop"></div>
+
+    <div id="realtimeStatus">Menghubungkan...</div>
+
+    <script>
+        /* =========================================================
+           KONFIGURASI SUPABASE
+        ========================================================= */
+
+        const SUPABASE_URL =
+            'https://awlxjzfadktcthbumxle.supabase.co';
+
+        const API_KEY =
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF3bHhqemZhZGt0YnVteGxlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM3ODU3NzgsImV4cCI6MjA5OTM2MTc3OH0.ktRLTXfsYmzb5RH8qKci0FgENkqqVG9atz5sHls9RXI';
+
+        /*
+         * Supabase client untuk Realtime
+         */
+        const supabaseClient = supabase.createClient(
+            SUPABASE_URL,
+            API_KEY
+        );
+
+
+        /* =========================================================
+           DATA
+        ========================================================= */
+
+        let notesData = {};
+        let highestZIndex = 10;
+
+        const isPortrait = () =>
+            window.matchMedia("(orientation: portrait)").matches;
+
+
+        /* =========================================================
+           HEADER REST API
+        ========================================================= */
+
+        const getHeaders = () => ({
+            'apikey': API_KEY,
+            'Authorization': `Bearer ${API_KEY}`,
+            'Content-Type': 'application/json',
+            'Prefer': 'resolution=merge-duplicates'
+        });
+
+
+        /* =========================================================
+           START
+        ========================================================= */
+
+        window.addEventListener('DOMContentLoaded', async () => {
+
+            setupInteractJS();
+
+            await fetchNotesFromSupabase();
+
+            startRealtime();
+        });
+
+
+        /* =========================================================
+           LOAD DATA AWAL
+        ========================================================= */
+
+        async function fetchNotesFromSupabase() {
+
+            try {
+
+                const response = await fetch(
+                    `${SUPABASE_URL}/rest/v1/notes?select=*`,
+                    {
+                        method: 'GET',
+                        headers: getHeaders()
+                    }
+                );
+
+                if (!response.ok) {
+                    throw new Error("Gagal mengambil data");
+                }
+
+                const data = await response.json();
+
+                if (!data || data.length === 0) {
+
+                    await createNewNote("Catatan Kosong");
+
+                } else {
+
+                    notesData = {};
+
+                    data.forEach(note => {
+
+                        notesData[String(note.id)] = normalizeNote(note);
+
+                        highestZIndex = Math.max(
+                            highestZIndex,
+                            Number(note.z_index) || 10
+                        );
+
+                    });
+
+                    renderAllOpenWindows();
+                }
+
+            } catch (e) {
+
+                console.error("Load error:", e);
+
+                setRealtimeStatus("Gagal mengambil data");
+
+            }
+        }
+
+
+        /* =========================================================
+           NORMALIZE NOTE
+        ========================================================= */
+
+        function normalizeNote(note) {
+
+            return {
+
+                id: String(note.id),
+
+                title: note.title || "Tanpa Judul",
+
+                content: note.content || "",
+
+                x: Number(note.x) || 50,
+
+                y: Number(note.y) || 50,
+
+                w: Number(note.w) || 580,
+
+                h: Number(note.h) || 400,
+
+                zIndex: Number(note.z_index) || 10
+
+            };
+        }
+
+
+        /* =========================================================
+           SAVE KE SUPABASE
+        ========================================================= */
+
+        async function syncNoteToSupabase(id) {
+
+            const note = notesData[id];
+
+            if (!note) return;
+
+            const saveStatus =
+                document.getElementById(`status_${id}`);
+
+            const payload = {
+
+                id: String(note.id),
+
+                title: String(note.title || ''),
+
+                content: String(note.content || ''),
+
+                x: Math.round(Number(note.x) || 50),
+
+                y: Math.round(Number(note.y) || 50),
+
+                w: Math.round(Number(note.w) || 580),
+
+                h: Math.round(Number(note.h) || 400),
+
+                z_index: Math.round(Number(note.zIndex) || 10),
+
+                updated_at: new Date().toISOString()
+
+            };
+
+            try {
+
+                const response = await fetch(
+                    `${SUPABASE_URL}/rest/v1/notes`,
+                    {
+                        method: 'POST',
+                        headers: getHeaders(),
+                        body: JSON.stringify(payload)
+                    }
+                );
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        `HTTP ${response.status}`
+                    );
+
+                }
+
+                if (saveStatus) {
+                    saveStatus.innerText = "Tersimpan";
+                }
+
+            } catch (e) {
+
+                console.error("Save error:", e);
+
+                if (saveStatus) {
+                    saveStatus.innerText = "Gagal menyimpan";
+                }
+            }
+        }
+
+
+        /* =========================================================
+           TAMBAH NOTE
+        ========================================================= */
+
+        async function createNewNote(customTitle) {
+
+            const id = 'note_' + Date.now();
+
+            const jumlah =
+                Object.keys(notesData).length;
+
+            highestZIndex++;
+
+            notesData[id] = {
+
+                id: id,
+
+                title: customTitle || "Catatan Baru",
+
+                content: "",
+
+                x: 50 + (jumlah * 20),
+
+                y: 50 + (jumlah * 20),
+
+                w: 580,
+
+                h: 400,
+
+                zIndex: highestZIndex
+
+            };
+
+            renderWindow(id);
+
+            await syncNoteToSupabase(id);
+        }
+
+
+        /* =========================================================
+           DELETE NOTE
+        ========================================================= */
+
+        async function deleteNote(id) {
+
+            delete notesData[id];
+
+            const el =
+                document.getElementById(id);
+
+            if (el) {
+                el.remove();
+            }
+
+            try {
+
+                const response = await fetch(
+                    `${SUPABASE_URL}/rest/v1/notes?id=eq.${encodeURIComponent(id)}`,
+                    {
+                        method: 'DELETE',
+                        headers: getHeaders()
+                    }
+                );
+
+                if (!response.ok) {
+                    throw new Error(
+                        `HTTP ${response.status}`
+                    );
+                }
+
+            } catch (e) {
+
+                console.error("Delete error:", e);
+
+            }
+        }
+
+
+        /* =========================================================
+           SUPABASE REALTIME
+        ========================================================= */
+
+        function startRealtime() {
+
+            setRealtimeStatus("Menghubungkan...");
+
+            supabaseClient
+                .channel('notes-realtime')
+
+                .on(
+                    'postgres_changes',
+                    {
+                        event: 'INSERT',
+                        schema: 'public',
+                        table: 'notes'
+                    },
+                    payload => {
+
+                        console.log(
+                            "Realtime INSERT:",
+                            payload
+                        );
+
+                        handleRealtimeInsert(
+                            payload.new
+                        );
+                    }
+                )
+
+                .on(
+                    'postgres_changes',
+                    {
+                        event: 'UPDATE',
+                        schema: 'public',
+                        table: 'notes'
+                    },
+                    payload => {
+
+                        console.log(
+                            "Realtime UPDATE:",
+                            payload
+                        );
+
+                        handleRealtimeUpdate(
+                            payload.new
+                        );
+                    }
+                )
+
+                .on(
+                    'postgres_changes',
+                    {
+                        event: 'DELETE',
+                        schema: 'public',
+                        table: 'notes'
+                    },
+                    payload => {
+
+                        console.log(
+                            "Realtime DELETE:",
+                            payload
+                        );
+
+                        handleRealtimeDelete(
+                            payload.old
+                        );
+                    }
+                )
+
+                .subscribe((status) => {
+
+                    console.log(
+                        "Realtime status:",
+                        status
+                    );
+
+                    if (status === 'SUBSCRIBED') {
+
+                        setRealtimeStatus(
+                            "● Realtime aktif"
+                        );
+
+                    } else if (
+                        status === 'CHANNEL_ERROR'
+                    ) {
+
+                        setRealtimeStatus(
+                            "Realtime error"
+                        );
+
+                    } else if (
+                        status === 'TIMED_OUT'
+                    ) {
+
+                        setRealtimeStatus(
+                            "Realtime timeout"
+                        );
+
+                    } else if (
+                        status === 'CLOSED'
+                    ) {
+
+                        setRealtimeStatus(
+                            "Realtime terputus"
+                        );
+                    }
+                });
+        }
+
+
+        /* =========================================================
+           REALTIME INSERT
+        ========================================================= */
+
+        function handleRealtimeInsert(rawNote) {
+
+            const note =
+                normalizeNote(rawNote);
+
+            const id = note.id;
+
+            highestZIndex = Math.max(
+                highestZIndex,
+                note.zIndex
+            );
+
+            /*
+             * Kalau note sudah ada di browser,
+             * jangan dibuat dua kali.
+             */
+            if (notesData[id]) {
+
+                updateExistingWindow(note);
+
+                return;
+            }
+
+            notesData[id] = note;
+
+            renderWindow(id);
+        }
+
+
+        /* =========================================================
+           REALTIME UPDATE
+        ========================================================= */
+
+        function handleRealtimeUpdate(rawNote) {
+
+            const note =
+                normalizeNote(rawNote);
+
+            const id = note.id;
+
+            highestZIndex = Math.max(
+                highestZIndex,
+                note.zIndex
+            );
+
+            /*
+             * Kalau belum ada di browser,
+             * buat window baru.
+             */
+            if (!notesData[id]) {
+
+                notesData[id] = note;
+
+                renderWindow(id);
+
+                return;
+            }
+
+            /*
+             * Update data lokal.
+             */
+            notesData[id] = note;
+
+            updateExistingWindow(note);
+        }
+
+
+        /* =========================================================
+           REALTIME DELETE
+        ========================================================= */
+
+        function handleRealtimeDelete(rawNote) {
+
+            if (!rawNote) return;
+
+            const id = String(rawNote.id);
+
+            delete notesData[id];
+
+            const el =
+                document.getElementById(id);
+
+            if (el) {
+                el.remove();
+            }
+        }
+
+
+        /* =========================================================
+           UPDATE WINDOW TANPA RELOAD
+        ========================================================= */
+
+        function updateExistingWindow(note) {
+
+            const win =
+                document.getElementById(note.id);
+
+            if (!win) {
+
+                renderWindow(note.id);
+
+                return;
+            }
+
+            /*
+             * Update posisi hanya jika landscape.
+             */
+            if (!isPortrait()) {
+
+                win.style.width =
+                    note.w + 'px';
+
+                win.style.height =
+                    note.h + 'px';
+
+                win.style.transform =
+                    `translate(${note.x}px, ${note.y}px)`;
+
+                win.setAttribute(
+                    'data-x',
+                    note.x
+                );
+
+                win.setAttribute(
+                    'data-y',
+                    note.y
+                );
+            }
+
+            win.style.zIndex =
+                note.zIndex;
+
+            /*
+             * Update judul.
+             */
+            const titleInput =
+                document.getElementById(
+                    `title_input_${note.id}`
+                );
+
+            if (
+                titleInput &&
+                document.activeElement !== titleInput
+            ) {
+
+                titleInput.value =
+                    note.title;
+            }
+
+
+            /*
+             * Update isi.
+             */
+            const textarea =
+                document.getElementById(
+                    `text_${note.id}`
+                );
+
+            if (
+                textarea &&
+                document.activeElement !== textarea
+            ) {
+
+                textarea.value =
+                    note.content;
+
+                autoResizeTextarea(
+                    textarea
+                );
+            }
+        }
+
+
+        /* =========================================================
+           STATUS REALTIME
+        ========================================================= */
+
+        function setRealtimeStatus(text) {
+
+            const el =
+                document.getElementById(
+                    'realtimeStatus'
+                );
+
+            if (el) {
+                el.innerText = text;
+            }
+        }
+
+
+        /* =========================================================
+           MINIMIZE
+        ========================================================= */
+
+        function toggleMinimize(id) {
+
+            if (isPortrait()) return;
+
+            const content =
+                document.getElementById(
+                    `content_${id}`
+                );
+
+            const win =
+                document.getElementById(id);
+
+            if (content.style.display === "none") {
+
+                content.style.display =
+                    "flex";
+
+                win.style.height =
+                    (notesData[id].h || 400) + 'px';
+
+            } else {
+
+                content.style.display =
+                    "none";
+
+                win.style.height =
+                    "28px";
+            }
+        }
+
+
+        /* =========================================================
+           MAXIMIZE
+        ========================================================= */
+
+        function toggleMaximize(id) {
+
+            if (isPortrait()) return;
+
+            const win =
+                document.getElementById(id);
+
+            if (
+                !win.dataset.maximized ||
+                win.dataset.maximized === "false"
+            ) {
+
+                win.dataset.oldW =
+                    win.style.width;
+
+                win.dataset.oldH =
+                    win.style.height;
+
+                win.dataset.oldTransform =
+                    win.style.transform;
+
+                win.style.width =
+                    '100vw';
+
+                win.style.height =
+                    '100vh';
+
+                win.style.transform =
+                    'translate(0px, 0px)';
+
+                win.dataset.maximized =
+                    "true";
+
+            } else {
+
+                win.style.width =
+                    win.dataset.oldW;
+
+                win.style.height =
+                    win.dataset.oldH;
+
+                win.style.transform =
+                    win.dataset.oldTransform;
+
+                win.dataset.maximized =
+                    "false";
+            }
+        }
+
+
+        /* =========================================================
+           BRING TO FRONT
+        ========================================================= */
+
+        function bringToFront(id) {
+
+            if (
+                notesData[id] &&
+                notesData[id].zIndex !== highestZIndex
+            ) {
+
+                highestZIndex++;
+
+                notesData[id].zIndex =
+                    highestZIndex;
+
+                const el =
+                    document.getElementById(id);
+
+                if (el) {
+                    el.style.zIndex =
+                        highestZIndex;
+                }
+            }
+        }
+
+
+        /* =========================================================
+           RENDER SEMUA WINDOW
+        ========================================================= */
+
+        function renderAllOpenWindows() {
+
+            document.getElementById(
+                'desktop'
+            ).innerHTML = '';
+
+            for (let id in notesData) {
+
+                renderWindow(id);
+            }
+        }
+
+
+        /* =========================================================
+           ESCAPE HTML
+        ========================================================= */
+
+        function escapeHtml(value) {
+
+            return String(value)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+
+        /* =========================================================
+           RENDER WINDOW
+        ========================================================= */
+
+        function renderWindow(id) {
+
+            const note =
+                notesData[id];
+
+            if (!note) return;
+
+            const desktop =
+                document.getElementById(
+                    'desktop'
+                );
+
+            /*
+             * Jangan membuat window dua kali.
+             */
+            if (
+                document.getElementById(
+                    note.id
+                )
+            ) {
+
+                updateExistingWindow(note);
+
+                return;
+            }
+
+            const win =
+                document.createElement('div');
+
+            win.id =
+                note.id;
+
+            win.className =
+                'mac-dark-widget';
+
+            win.style.width =
+                note.w + 'px';
+
+            win.style.height =
+                note.h + 'px';
+
+            win.style.zIndex =
+                note.zIndex;
+
+            win.style.transform =
+                `translate(${note.x}px, ${note.y}px)`;
+
+            win.setAttribute(
+                'data-x',
+                note.x
+            );
+
+            win.setAttribute(
+                'data-y',
+                note.y
+            );
+
+            win.addEventListener(
+                'mousedown',
+                () => bringToFront(note.id)
+            );
+
+
+            const safeTitle =
+                escapeHtml(note.title);
+
+            const safeContent =
+                escapeHtml(note.content);
+
+
+            win.innerHTML = `
+
+                <div class="title-bar drag-handle">
+
+                    <div class="mac-controls">
+
+                        <button
+                            class="mac-btn close"
+                            onclick="deleteNote('${note.id}')"
+                            title="Hapus">
+                        </button>
+
+                        <button
+                            class="mac-btn minimize"
+                            onclick="toggleMinimize('${note.id}')"
+                            title="Minimize">
+                        </button>
+
+                        <button
+                            class="mac-btn maximize"
+                            onclick="toggleMaximize('${note.id}')"
+                            title="Maximize">
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <div
+                    id="content_${note.id}"
+                    style="
+                        display:flex;
+                        flex-direction:column;
+                        flex:1;
+                        overflow:hidden;
+                    "
+                >
+
+                    <div class="toolbar">
+
+                        <div class="nav-icons">
+
+                            <i class="fa-solid fa-chevron-left"></i>
+
+                            <i class="fa-solid fa-chevron-right"></i>
+
+                        </div>
+
+                        <div class="toolbar-title">
+                            Notepad
+                        </div>
+
+                    </div>
+
+
+                    <div class="app-header">
+
+                        <div class="app-info-left">
+
+                            <div class="app-icon">
+
+                                <i class="fa-solid fa-note-sticky"></i>
+
+                            </div>
+
+                            <div class="app-text">
+
+                                <input
+                                    type="text"
+                                    class="note-title-input"
+                                    id="title_input_${note.id}"
+                                    value="${safeTitle}"
+                                >
+
+                                <p>
+                                    <span id="status_${note.id}">
+                                        Tersimpan
+                                    </span>
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="notepad-container">
+
+                        <textarea
+                            id="text_${note.id}"
+                            placeholder="Ketik catatan..."
+                        >${safeContent}</textarea>
+
+                    </div>
+
+
+                    <div class="window-footer">
+
+                        <div class="breadcrumb">
+
+                            <i class="fa-solid fa-laptop"></i>
+
+                            Macintosh HD > Notes
+
+                        </div>
+
+                        <button
+                            class="btn-blue"
+                            onclick="deleteNote('${note.id}')"
+                        >
+                            Hapus Note
+                        </button>
+
+                    </div>
+
+                </div>
+            `;
+
+
+            desktop.appendChild(win);
+
+
+            const textarea =
+                document.getElementById(
+                    `text_${note.id}`
+                );
+
+            const titleInput =
+                document.getElementById(
+                    `title_input_${note.id}`
+                );
+
+            let timeout = null;
+
+
+            /* =====================================================
+               AUTO RESIZE TEXTAREA
+            ===================================================== */
+
+            const resize =
+                () => autoResizeTextarea(textarea);
+
+            setTimeout(resize, 50);
+
+
+            /* =====================================================
+               SAVE SAAT MENGETIK
+            ===================================================== */
+
+            const triggerSave = () => {
+
+                const status =
+                    document.getElementById(
+                        `status_${note.id}`
+                    );
+
+                if (status) {
+                    status.innerText =
+                        "Menyimpan...";
+                }
+
+                resize();
+
+                clearTimeout(timeout);
+
+                timeout =
+                    setTimeout(async () => {
+
+                        if (!notesData[note.id]) {
+                            return;
+                        }
+
+                        notesData[note.id].content =
+                            textarea.value;
+
+                        notesData[note.id].title =
+                            titleInput.value ||
+                            "Tanpa Judul";
+
+                        await syncNoteToSupabase(
+                            note.id
+                        );
+
+                    }, 500);
+            };
+
+
+            textarea.addEventListener(
+                'input',
+                triggerSave
+            );
+
+            titleInput.addEventListener(
+                'input',
+                triggerSave
+            );
+        }
+
+
+        /* =========================================================
+           AUTO RESIZE
+        ========================================================= */
+
+        function autoResizeTextarea(textarea) {
+
+            if (!textarea) return;
+
+            textarea.style.height =
+                'auto';
+
+            textarea.style.height =
+                textarea.scrollHeight + 'px';
+        }
+
+
+        /* =========================================================
+           INTERACT.JS
+        ========================================================= */
+
+        function setupInteractJS() {
+
+            interact('.mac-dark-widget')
+
+                .draggable({
+
+                    allowFrom: '.drag-handle',
+
+                    listeners: {
+
+                        start(event) {
+
+                            bringToFront(
+                                event.target.id
+                            );
+                        },
+
+                        move(event) {
+
+                            if (isPortrait()) {
+                                return;
+                            }
+
+                            const target =
+                                event.target;
+
+                            let x =
+                                (parseFloat(
+                                    target.getAttribute(
+                                        'data-x'
+                                    )
+                                ) || 0) + event.dx;
+
+                            let y =
+                                (parseFloat(
+                                    target.getAttribute(
+                                        'data-y'
+                                    )
+                                ) || 0) + event.dy;
+
+
+                            target.style.transform =
+                                `translate(${x}px, ${y}px)`;
+
+                            target.setAttribute(
+                                'data-x',
+                                x
+                            );
+
+                            target.setAttribute(
+                                'data-y',
+                                y
+                            );
+                        },
+
+                        end(event) {
+
+                            if (isPortrait()) {
+                                return;
+                            }
+
+                            const id =
+                                event.target.id;
+
+                            if (notesData[id]) {
+
+                                notesData[id].x =
+                                    parseFloat(
+                                        event.target.getAttribute(
+                                            'data-x'
+                                        )
+                                    );
+
+                                notesData[id].y =
+                                    parseFloat(
+                                        event.target.getAttribute(
+                                            'data-y'
+                                        )
+                                    );
+
+                                syncNoteToSupabase(id);
+                            }
+                        }
+                    }
+                })
+
+
+                .resizable({
+
+                    edges: {
+                        left: true,
+                        right: true,
+                        bottom: true,
+                        top: false
+                    },
+
+                    listeners: {
+
+                        start(event) {
+
+                            bringToFront(
+                                event.target.id
+                            );
+                        },
+
+                        move(event) {
+
+                            if (isPortrait()) {
+                                return;
+                            }
+
+                            const target =
+                                event.target;
+
+                            let x =
+                                (parseFloat(
+                                    target.getAttribute(
+                                        'data-x'
+                                    )
+                                ) || 0)
+                                +
+                                event.deltaRect.left;
+
+                            let y =
+                                (parseFloat(
+                                    target.getAttribute(
+                                        'data-y'
+                                    )
+                                ) || 0)
+                                +
+                                event.deltaRect.top;
+
+
+                            Object.assign(
+                                target.style,
+                                {
+                                    width:
+                                        `${event.rect.width}px`,
+
+                                    height:
+                                        `${event.rect.height}px`,
+
+                                    transform:
+                                        `translate(${x}px, ${y}px)`
+                                }
+                            );
+
+
+                            Object.assign(
+                                target.dataset,
+                                {
+                                    x: x,
+                                    y: y
+                                }
+                            );
+                        },
+
+                        end(event) {
+
+                            if (isPortrait()) {
+                                return;
+                            }
+
+                            const id =
+                                event.target.id;
+
+                            if (notesData[id]) {
+
+                                notesData[id].w =
+                                    parseFloat(
+                                        event.target.style.width
+                                    );
+
+                                notesData[id].h =
+                                    parseFloat(
+                                        event.target.style.height
+                                    );
+
+                                syncNoteToSupabase(id);
+                            }
+                        }
+                    }
+                });
+        }
+
+
+        /* =========================================================
+           DETEKSI ORIENTASI
+        ========================================================= */
+
+        window.addEventListener(
+            'resize',
+            () => {
+
+                /*
+                 * Saat berpindah landscape/portrait,
+                 * kita tidak perlu reload halaman.
+                 */
+            }
+        );
+
+    </script>
+
+</body>
+</html>
